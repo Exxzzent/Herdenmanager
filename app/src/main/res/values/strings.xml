@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">BA Herdenmanagement</string>
+    <string name="export">&lt;/&gt; Export</string>
+
+    <!-- Nachrichten des Rindviehs -->
+    <string name="rindvieh_nix_acker">%1$s brüllt wie am Spieß: Da ist kein Acker!</string>
+    <string name="rindvieh_vor_mir_kein_acker">%1$s steht da und schüttelt den Kopf: Vor mir ist kein Acker!</string>
+    <string name="rindvieh_hinter_mir_kein_acker">%1$s steht da und schüttelt den Kopf: Hinter mir ist kein Acker!</string>
+    <string name="rindvieh_kein_gras">%2$s steht da und schüttelt den Kopf: Da ist gar kein Gras!</string>
+    <string name="rindvieh_kein_eimer">%1$s steht da und schüttelt den Kopf: Da steht kein Eimer!</string>
+    <string name="rindvieh_erst_fressen">%1$s steht da und schüttelt den Kopf: Ich muss erst fressen!</string>
+    <string name="rindvieh_nix_zu_rauchen">%1$s steht da und schüttelt den Kopf: Hier ist nix zu rauchen!</string>
+
+</resources>
