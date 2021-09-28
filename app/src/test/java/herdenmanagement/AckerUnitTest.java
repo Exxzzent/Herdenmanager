@@ -104,10 +104,4 @@ public class AckerUnitTest {
         milch = rindvieh.gibMilch();
         assertEquals(1, milch);
     }
-
-    @Test(expected = RuntimeException.class)
-    public void divisionDurchNull () {
-        @SuppressWarnings({"NumericOverflow", "divzero"})
-        float result = 100f / 0;
-    }
 }

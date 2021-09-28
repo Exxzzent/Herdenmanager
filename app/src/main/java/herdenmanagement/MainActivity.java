@@ -2,8 +2,8 @@ package herdenmanagement;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import de.ba.herdenmanagement.R;
@@ -24,29 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private HerdenManager herdenManager;
 
     /**
-     * Called when the activity is starting.  This is where most initialization
-     * should go: calling {@link #setContentView(int)} to inflate the
-     * activity's UI, using {@link #findViewById} to programmatically interact
-     * with widgets in the UI, calling
-     * {@link #managedQuery(android.net.Uri, String[], String, String[], String)} to retrieve
-     * cursors for data being displayed, etc.
-     * <p>
-     * <p>You can call {@link #finish} from within this function, in
-     * which case onDestroy() will be immediately called without any of the rest
-     * of the activity lifecycle ({@link #onStart}, {@link #onResume},
-     * {@link #onPause}, etc) executing.
-     * <p>
-     * <p><em>Derived classes must call through to the super class's
-     * implementation of this method.  If they do not, an exception will be
-     * thrown.</em></p>
+     * Called when the activity is starting.
      *
      * @param savedInstanceState If the activity is being re-initialized after
      *                           previously being shut down then this Bundle contains the data it most
      *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     * @see #onStart
-     * @see #onSaveInstanceState
-     * @see #onRestoreInstanceState
-     * @see #onPostCreate
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +37,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Called after {@link #onCreate} &mdash; or after {@link #onRestart} when
-     * the activity had been stopped, but is now again being displayed to the
-     * user.  It will be followed by {@link #onResume}.
-     * <p>
-     * <p><em>Derived classes must call through to the super class's
-     * implementation of this method.  If they do not, an exception will be
-     * thrown.</em></p>
-     *
-     * @see #onCreate
-     * @see #onStop
-     * @see #onResume
+     * Called after {@link #onCreate}.
      */
     protected void onStart() {
         super.onStart();
@@ -73,27 +45,24 @@ public class MainActivity extends AppCompatActivity {
         // erzeugt einen HerdenManager
         herdenManager = new HerdenManager();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Während manageHerde möchten wir alle Aktionen sehen
-                AckerView ackerView = findViewById(R.id.acker_view);
+        new Thread(() -> {
+            // Während manageHerde möchten wir alle Aktionen sehen
+            AckerView ackerView = findViewById(R.id.acker_view);
 
-                // Acker einrichten, dies soll in einem "Rutsch" passieren,
-                // die einzelnen Aktionen werden nicht animiert
-                ackerView.setThreading(Animator.Threading.ASYNCHRONOUS_NO_WAIT);
-                herdenManager.richteAckerEin(MainActivity.this);
+            // Acker einrichten, dies soll in einem "Rutsch" passieren,
+            // die einzelnen Aktionen werden nicht animiert
+            ackerView.setThreading(Animator.Threading.ASYNCHRONOUS_NO_WAIT);
+            herdenManager.richteAckerEin(MainActivity.this);
 
-                // Während manageHerde möchten wir alle Aktionen einzeln nachvollziehen
-                ackerView.setThreading(Animator.Threading.SYNCHRONOUS);
+            // Während manageHerde möchten wir alle Aktionen einzeln nachvollziehen
+            ackerView.setThreading(Animator.Threading.SYNCHRONOUS);
 
-                // bewegt ein Rind oder mehrer auf dem Acker
-                herdenManager.manageHerde(MainActivity.this);
+            // bewegt ein Rind oder mehrer auf dem Acker
+            herdenManager.manageHerde(MainActivity.this);
 
-                // Alle Aktionen auf dem Acker, die jetzt folgen, werden direkt asynchron
-                // ausgeführt. Betroffen sind vor allem Button-Clicks
-                ackerView.setThreading(Animator.Threading.ASYNCHRONOUS);
-            }
+            // Alle Aktionen auf dem Acker, die jetzt folgen, werden direkt asynchron
+            // ausgeführt. Betroffen sind vor allem Button-Clicks
+            ackerView.setThreading(Animator.Threading.ASYNCHRONOUS);
         }).start();
     }
 
@@ -114,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
      * @param newConfig The new device configuration.
      */
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
         // Den Acker der aktuellen AckerView ermitteln
@@ -138,12 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Den Zustand des Threadings wieder herstellen
         ackerView.setThreading(currentThreading);
-    }
-
-    public void eineMethode(View view) {
-    }
-
-    public void zweiteMethode(View view) {
     }
 }
 

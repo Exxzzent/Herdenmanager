@@ -111,7 +111,8 @@ public class Acker extends BeobachtbaresElement {
      */
     public Gras lassGrasWachsen(Position position) {
         Gras gras = new Gras();
-        gras.wachseUndGedeihe(this, position);
+        gras.setzeAcker(this);
+        gras.setzePosition(position);
         graeser.add(gras);
 
         informiereBeobachter(PROPERTY_GRAESER, null, gras);
@@ -160,7 +161,8 @@ public class Acker extends BeobachtbaresElement {
      */
     public Eimer stelleEimerAuf(Position position) {
         Eimer e = new Eimer();
-        e.positioniereDich(this, position);
+        e.setzeAcker(this);
+        e.setzePosition(position);
         eimer.add(e);
 
         informiereBeobachter(PROPERTY_EIMER, null, e);
@@ -261,9 +263,5 @@ public class Acker extends BeobachtbaresElement {
      */
     public List<Gras> getGraeser() {
         return graeser;
-    }
-
-    public void wasSchrägeres() {
-        DummesDing ding;
     }
 }

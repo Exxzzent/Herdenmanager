@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
-import herdenmanagement.model.DekoElement;
 import herdenmanagement.model.Rindvieh;
 import herdenmanagement.view.AckerView;
 
@@ -35,8 +34,6 @@ import herdenmanagement.view.AckerView;
  * (insbesondere Änderungen auf Acker) organisiert, ist sie der Controller im MVC Muster.
  */
 public class HerdenManager {
-
-    private DekoElement element;
 
     /**
      * Acker, auf dem nach Herzenslust geackert werden kasnn.
