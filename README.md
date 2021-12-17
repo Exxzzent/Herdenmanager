@@ -1,4 +1,4 @@
-# Manager Light für Rinderherden
+# Manager für Rinderherden
 
 Die folgenden Hinweise sollen bei der Lösung von Aufgaben helfen.
 Sie beschreiben die in den jeweiligen Klassen implementierten
