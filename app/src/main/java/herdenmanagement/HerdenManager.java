@@ -1,9 +1,5 @@
 package herdenmanagement;
 
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-
 import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
 import herdenmanagement.model.Rindvieh;
@@ -32,6 +28,8 @@ import herdenmanagement.view.AckerView;
  * Die Klasse verknüpft im Wesentlichen einen {@link Acker} (= Model im MVC Muster) mit seiner
  * {@link AckerView} (= View im MVC Muster). Da sie diese und andere Vorgänge
  * (insbesondere Änderungen auf Acker) organisiert, ist sie der Controller im MVC Muster.
+ *
+ * @author Steffen Greiffenberg
  */
 public class HerdenManager {
 

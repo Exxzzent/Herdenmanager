@@ -15,6 +15,8 @@ import herdenmanagement.view.Animator;
  * Die Klasse wurde vom Android angelegt und sorgt für die Anzeige der App auf dem Handy.
  * Hierzu wird unser {@link HerdenManager} initialisiert und mit einer {@link AckerView}
  * verknüpft.
+ *
+ * @author Steffen Greiffenberg
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -57,11 +59,12 @@ public class MainActivity extends AppCompatActivity {
             // Während manageHerde möchten wir alle Aktionen einzeln nachvollziehen
             ackerView.setThreading(Animator.Threading.SYNCHRONOUS);
 
-            // bewegt ein Rind oder mehrer auf dem Acker
+            // Hier können vorprogrammierte Aktionen auf dem Acker stattfinden. Zum
+            // Beispiel kann ein Rind auf dem Acker bewegt werden.
             herdenManager.manageHerde(MainActivity.this);
 
             // Alle Aktionen auf dem Acker, die jetzt folgen, werden direkt asynchron
-            // ausgeführt. Betroffen sind vor allem Button-Clicks
+            // ausgeführt. Betroffen sind vor allem Button-Clicks.
             ackerView.setThreading(Animator.Threading.ASYNCHRONOUS);
         }).start();
     }

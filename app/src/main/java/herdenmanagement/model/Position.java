@@ -3,6 +3,8 @@ package herdenmanagement.model;
 /**
  * Eine Position speichert eine X- und Y-Koordinate für Objekte der Klasse {@link PositionsElement}.
  * Andere Positionen sind auch wichtig, aber nicht für Rindviecher.
+ *
+ * @author Steffen Greiffenberg
  */
 public class Position {
 

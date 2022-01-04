@@ -10,6 +10,7 @@ import android.text.TextPaint;
 
 import de.ba.herdenmanagement.R;
 
+import herdenmanagement.model.PositionsElement;
 import herdenmanagement.model.Rindvieh;
 
 /**
@@ -17,6 +18,8 @@ import herdenmanagement.model.Rindvieh;
  * Methode {@link #getAktuellesBild()}, um ein Rindvieh darzustellen. Da das Rind in
  * verschiedene Richtungen schauen kann, ist die Klasse komplizierter aufgebaut
  * als zum beispiel die {@link EimerView}.
+ *
+ * @author Steffen Greiffenberg
  */
 public class RindviehView extends PositionElementView {
 
@@ -35,19 +38,21 @@ public class RindviehView extends PositionElementView {
      * @return Bild einer Kuh, die in die richtige Richtung schaut
      */
     protected Bitmap getAktuellesBild() {
-        if (Rindvieh.StatusTyp.FRISST.equals(getRindvieh().gibStatus())) {
+        Rindvieh rindvieh = getRindvieh();
+
+        if (Rindvieh.StatusTyp.FRISST.equals(rindvieh.gibStatus())) {
             return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.kuh_gras);
-        } else if (Rindvieh.StatusTyp.RAUCHT.equals(getRindvieh().gibStatus())) {
+        } else if (Rindvieh.StatusTyp.RAUCHT.equals(rindvieh.gibStatus())) {
             return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.kuh_rauch);
         }
 
-        if (getRindvieh().gibRichtung() == Rindvieh.RichtungsTyp.NORD) {
+        if (rindvieh.gibRichtung() == Rindvieh.RichtungsTyp.NORD) {
             return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.kuh_hinten);
-        } else if (getRindvieh().gibRichtung() == Rindvieh.RichtungsTyp.WEST) {
+        } else if (rindvieh.gibRichtung() == Rindvieh.RichtungsTyp.WEST) {
             return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.kuh_links);
-        } else if (getRindvieh().gibRichtung() == Rindvieh.RichtungsTyp.SUED) {
+        } else if (rindvieh.gibRichtung() == Rindvieh.RichtungsTyp.SUED) {
             return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.kuh_vorn);
-        } else if (getRindvieh().gibRichtung() == Rindvieh.RichtungsTyp.OST) {
+        } else if (rindvieh.gibRichtung() == Rindvieh.RichtungsTyp.OST) {
             return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.kuh_rechts);
         }
 

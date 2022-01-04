@@ -11,6 +11,8 @@ import herdenmanagement.model.Gras;
 /**
  * Die Klasse erbt von {@link PositionElementView} und überschreibt die dortige
  * Methode {@link #getAktuellesBild()}, um Gras darzustellen.
+ *
+ * @author Steffen Greiffenberg
  */
 public class GrasView extends PositionElementView {
 

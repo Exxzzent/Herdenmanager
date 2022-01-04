@@ -17,6 +17,8 @@ import java.util.List;
  * <p>
  * Im Muster Model View Controller sind Objekte dieser Klasse Bestandteil des Model. Der Acker
  * kann mit einer {@link herdenmanagement.view.AckerView} dargestellt werden.
+ *
+ * @author Steffen Greiffenberg
  */
 public class Acker extends BeobachtbaresElement {
 

@@ -27,6 +27,8 @@ import herdenmanagement.model.Rindvieh;
  * die Änderungen. Es ist Aufgabe der AckerView für die neuen Elemente korrespondierend eine
  * {@link EimerView}, {@link GrasView} oder {@link RindviehView} zu erzeugen und als Child-Element
  * (siehe {@link #addView(View)}) anzuzeigen.
+ *
+ * @author Steffen Greiffenberg
  */
 public class AckerView extends FrameLayout implements PropertyChangeListener {
 
@@ -145,16 +147,10 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
      */
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // get the width from widthMeasureSpec
-        float width = MeasureSpec.getSize(widthMeasureSpec);
-        if (width < 0) {
-            width = 0;
-        }
+        float width = Math.max(MeasureSpec.getSize(widthMeasureSpec), 0);
 
         // get the height from widthMeasureSpec
-        float height = MeasureSpec.getSize(heightMeasureSpec);
-        if (height < 0) {
-            height = 0;
-        }
+        float height = Math.max(MeasureSpec.getSize(heightMeasureSpec), 0);
 
         // set LayoutParams for all childs
         for (int i = 0, count = getChildCount(); i < count; i++) {

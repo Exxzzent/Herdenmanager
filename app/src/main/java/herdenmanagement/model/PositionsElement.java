@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * Jedes PositionsElement verfügt über eine eindeutige ID.
  * Im Muster Model View Controller sind Objekte erbender Klassen Bestandteil des Model.
+ *
+ * @author Steffen Greiffenberg
  */
 public class PositionsElement extends BeobachtbaresElement {
 
@@ -107,10 +109,11 @@ public class PositionsElement extends BeobachtbaresElement {
      * @param resourcenID Ressourcen-ID der Nachricht
      */
     protected void zeigeNachricht(int resourcenID) {
-        Object oldNachricht = this.nachricht;
+        PositionsElement oldElement = kopiere();
         this.nachricht = resourcenID;
+        PositionsElement newElement = kopiere();
 
-        informiereBeobachter(PROPERTY_NACHRICHT, oldNachricht, nachricht);
+        informiereBeobachter(PROPERTY_NACHRICHT, oldElement, newElement);
     }
 
     /**
@@ -119,10 +122,11 @@ public class PositionsElement extends BeobachtbaresElement {
      * @param nachricht Letzte Nachricht (Fehler- oder Vollzugsmeldung)
      */
     public void setzeNachricht(String nachricht) {
-        Object oldNachricht = this.nachricht;
+        PositionsElement oldElement = kopiere();
         this.nachricht = nachricht;
+        PositionsElement newElement = kopiere();
 
-        informiereBeobachter(PROPERTY_NACHRICHT, oldNachricht, nachricht);
+        informiereBeobachter(PROPERTY_NACHRICHT, oldElement, newElement);
     }
 
     /**
@@ -134,15 +138,23 @@ public class PositionsElement extends BeobachtbaresElement {
     }
 
     /**
+     * @return Letzte Nachricht
+     */
+    public Object gibNachricht() {
+        return nachricht;
+    }
+
+    /**
      * Die PropertyChangeListener werden informiert.
      *
      * @param position Neue Position auf dem Acker
      */
     public void setzePosition(Position position) {
-        Position oldPosition = this.position;
+        PositionsElement oldElement = kopiere();
         this.position = position;
+        PositionsElement newElement = kopiere();
 
-        informiereBeobachter(PROPERTY_POSITION, oldPosition, position);
+        informiereBeobachter(PROPERTY_POSITION, oldElement, newElement);
     }
 
     /**
@@ -175,5 +187,27 @@ public class PositionsElement extends BeobachtbaresElement {
      */
     public String gibName() {
         return getClass().getSimpleName();
+    }
+
+    /**
+     * @return Kopie der Kuh
+     */
+    public PositionsElement kopiere() {
+        // Rindvieh incl. dessen Name kopieren
+        PositionsElement kopie = new PositionsElement();
+        kopiere(kopie);
+        return kopie;
+    }
+
+    /**
+     * Kopiert die eigenen Attribute in die Kopie.
+     *
+     * @param kopie Kopie von this
+     */
+    protected void kopiere(PositionsElement kopie) {
+        // eigene Attribute kopieren
+        kopie.acker = acker;
+        kopie.nachricht = nachricht;
+        kopie.position = new Position(position.x, position.y);
     }
 }

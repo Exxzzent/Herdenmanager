@@ -19,24 +19,49 @@ import java.util.concurrent.ArrayBlockingQueue;
  * der von den Methoden der Klassen aus dem Paket herdenmanagement.view losgelöst ist.
  * Der Grund liegt in der Tatsache begründet, dass Änderungen am Layout nur im
  * Main Thread einer Android App vorgenommen werden können.
+ *
+ * @author Steffen Greiffenberg
  */
 public class Animator {
 
     /**
      * Wartezeit für Bewegungen in ms
      */
-    public static int WARTEZEIT = 500;
+    public static int WARTEZEIT = 1000;
 
     /**
      * Werden PositionsElemente mit Buttons bewegt, sollte der Animator im Modus
      * ASYNCHRONOUS betrieben werden. Dies stellt die Sichtbarkeit aller Aktionen sicher.
+     *
+     * Werden Positionselemente auf dem Acker eingerichtet, sollte ASYNCHRONOUS_NO_WAIT
+     * verwendet werden. Damit erscheinen alle Aktionen zeitgleich und ohne Verzögerung
+     * stattzufinden.
+     *
+     * Sollen programmierte Aktionen nacheineinander und einzeln sichtbar auf dem Bildschirm
+     * nachvollzogen werden, ist SYNCHRONOUS der richtige Modus.
      */
     public enum Threading {
+        // Direktes Ausführen aller Aktionen im UI-Thread.
+        // Bei Ausführung von performAction(Action action)
+        // wird der aufrufende Thread WARTEZEIT ms blockiert.
         SYNCHRONOUS,
+        // Alle Aktionen kommen in eine Warteschlange.
+        // Bei Ausführung von performAction(Action action)
+        // wird der aufrufende Thread nicht blockiert.
+        // Aus der Warteschlange werden die Aktionen nacheinander im UI-Thread ausgeführt.
+        // Zwischen den Aktionen wird WARTEZEIT ms gewartet.
         ASYNCHRONOUS,
+        // Alle Aktionen kommen in eine Warteschlange.
+        // Bei Ausführung von performAction(Action action)
+        // wird der aufrufende Thread nicht blockiert.
+        // Aus der Warteschlange werden die Aktionen nacheinander im UI-Thread ausgeführt.
+        // Zwischen den Aktionen wird nicht gewartet.
         ASYNCHRONOUS_NO_WAIT
     }
 
+    /**
+     * Alle Aktionen werden direkt ausgeführt ohne Wartezeit.
+     */
     private Threading threading = Threading.SYNCHRONOUS;
 
     /**

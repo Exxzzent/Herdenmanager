@@ -26,6 +26,8 @@ import java.util.List;
  * Eine Liste dieser Objekte wird von dieser Klasse verwaltet. An diese werden bei Änderungen
  * Instanzen von {@link PropertyChangeEvent} gesendet. Diese beinhalten den alten und neuen Wert,
  * den Namen der Eigenschaft und das geänderte Objekt selbst (also stets #this).
+ *
+ * @author Steffen Greiffenberg
  */
 public class BeobachtbaresElement {
 

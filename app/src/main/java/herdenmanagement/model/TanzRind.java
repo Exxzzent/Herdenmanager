@@ -9,6 +9,8 @@ package herdenmanagement.model;
  * Es wird sichergestellt, dass die Kuh nicht über den Rand des Ackers hinaus gehen kann.
  * <p>
  * Im Muster Model View Controller sind Objekte dieser Klasse Bestandteil des Model.
+ *
+ * @author Steffen Greiffenberg
  */
 public class TanzRind extends Rindvieh {
 

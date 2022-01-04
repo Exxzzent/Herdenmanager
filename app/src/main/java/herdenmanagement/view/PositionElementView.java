@@ -25,17 +25,23 @@ import herdenmanagement.model.PositionsElement;
  * <p>
  * Im Muster Obersever ist die Klasse ein ConcreteObserer, der PropertyChangeListener
  * ist das implementierte Observer Interface.
+ *
+ * @author Steffen Greiffenberg
  */
 public class PositionElementView extends AppCompatImageView implements PropertyChangeListener {
 
     /**
      * Animator für die Aktualisierung der GUI
      */
-    private Animator animator;
+    private final Animator animator;
 
     /**
      * {@link PositionsElement}, welches hier dargestellt wird. Das {@link PositionsElement}
      * kennt seine View nicht, nur die View kennt ihr Modell.
+     *
+     * Im Attribut wird das zuletzt geänderte Element gespeichert, über das diese View
+     * informiert wurde. Während einer Animation ist das Original dieser Kopie möglicherweise
+     * in einem anderen Zustand (an anderer Position o. ä.).
      */
     private PositionsElement positionsElement;
 
@@ -50,9 +56,12 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
 
         this.animator = animator;
 
-        // PositionsElement merken und observieren
-        this.positionsElement = positionsElement;
-        this.positionsElement.fuegeBeobachterHinzu(this);
+        // PositionsElement observieren
+        positionsElement.fuegeBeobachterHinzu(this);
+
+        // Kopie merken, nicht das original (s. o.)
+        this.positionsElement = positionsElement.kopiere();
+
         // ID des PositionsElement übernehmen
         setId(positionsElement.gibId());
 
@@ -77,27 +86,28 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
      */
     @Override
     public void propertyChange(final PropertyChangeEvent evt) {
+        PositionsElement positionsElement = (PositionsElement) evt.getNewValue();
 
         // Nachricht anzeigen
         if (PositionsElement.PROPERTY_NACHRICHT.equals(evt.getPropertyName())) {
-            Object nachricht = evt.getNewValue();
+            Object nachricht = positionsElement.gibNachricht();
 
             // Ist die Nachricht ein String, wird dieser direkt angezeigt
             if (nachricht instanceof String) {
-                toast((String) evt.getNewValue());
+                toast((String) nachricht);
             }
 
             // Ist die Nachricht eine Zahl, wird sie zunächst als ID im Ressourcen-Bundle interpretiert
             // Klappt das nicht, wird die Zahl gezeigt
             if (nachricht instanceof Number) {
                 try {
-                    String text = getContext().getResources().getString(((Number) nachricht).intValue(), positionsElement.gibName());
+                    int id = ((Number) nachricht).intValue();
+                    String text = getContext().getResources().getString(id, positionsElement.gibName());
                     toast(text);
                 } catch (Resources.NotFoundException e) {
                     toast("" + nachricht);
                 }
             }
-
         }
 
         // Bei Änderungen der Position, muss ein neues Layout berechnet werden
@@ -108,14 +118,18 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
                 return;
             }
 
-            // remember current LayoutParams
-            final FrameLayout.LayoutParams lp = calculateLayoutParams(ackerView.getWidth(), ackerView.getHeight());
-
             // Bei Änderungen der Position, muss ein neues Layout berechnet werden
             animator.performAction(new Animator.Action() {
                 @Override
                 public void run() {
-                    // image animiert setzen
+                    // Kopie aktualisieren
+                    PositionElementView.this.positionsElement = positionsElement;
+
+                    // remember current LayoutParams
+                    final FrameLayout.LayoutParams lp = calculateLayoutParams(
+                            ackerView.getWidth(), ackerView.getHeight());
+
+                    // Animation starten
                     if (getParent() instanceof ViewGroup) {
                         TransitionManager.beginDelayedTransition((ViewGroup) getParent());
                     }
@@ -125,18 +139,21 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
                 }
             });
         } else {
-            final Bitmap bitmap = getAktuellesBild();
 
             // Bei Änderungen der Position, muss ein neues Layout berechnet werden
             animator.performAction(new Animator.Action() {
                 @Override
                 public void run() {
-                    // image animiert setzen
+                    // Kopie aktualisieren
+                    PositionElementView.this.positionsElement = positionsElement;
+
+                    // Animation starten
                     if (getParent() instanceof ViewGroup) {
                         TransitionManager.beginDelayedTransition((ViewGroup) getParent());
                     }
 
                     // Bild aktualisieren
+                    final Bitmap bitmap = getAktuellesBild();
                     setImageBitmap(bitmap);
                 }
             });
@@ -150,8 +167,8 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
      */
     @NonNull
     public FrameLayout.LayoutParams calculateLayoutParams(float width, float height) {
-        Acker acker = getPositionsElement().gibAcker();
-        Position position = getPositionsElement().gibPosition();
+        Acker acker = positionsElement.gibAcker();
+        Position position = positionsElement.gibPosition();
 
         int columns = acker == null ? 0 : acker.zaehleSpalten();
         float columnWidth = (int) (width / columns);
@@ -167,6 +184,8 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
         result.height = (int) rowHeight;
         result.leftMargin = (int) (position.x * columnWidth);
         result.topMargin = (int) (position.y * rowHeight);
+
+        System.out.println(" lm: " + result.leftMargin);
 
         return result;
     }

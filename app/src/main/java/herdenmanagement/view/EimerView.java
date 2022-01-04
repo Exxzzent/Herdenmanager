@@ -11,6 +11,8 @@ import herdenmanagement.model.Eimer;
 /**
  * Die Klasse erbt von {@link PositionElementView} und überschreibt die dortige
  * Methode {@link #getAktuellesBild()}, um einen Eimer darzustellen.
+ *
+ * @author Steffen Greiffenberg
  */
 public class EimerView extends PositionElementView {
 

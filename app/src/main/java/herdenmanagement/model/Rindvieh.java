@@ -1,5 +1,7 @@
 package herdenmanagement.model;
 
+import androidx.annotation.NonNull;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -23,6 +25,8 @@ import de.ba.herdenmanagement.R;
  * <p>
  * Eigenschaften, die beobachtet werden können sind die Nachrichten des PositionsElements
  * sowie {@link #richtung}, {@link #status} und {@link #milchImEuter}.
+ *
+ * @author Steffen Greiffenberg
  */
 public class Rindvieh extends PositionsElement {
 
@@ -100,10 +104,6 @@ public class Rindvieh extends PositionsElement {
         this.richtung = RichtungsTyp.OST;
     }
 
-    public Acker gibAcker() {
-        return super.gibAcker();
-    }
-
     /**
      * @return Aktueller Status der Kuh, zum Beispiel {@link StatusTyp#FRISST}
      */
@@ -120,10 +120,11 @@ public class Rindvieh extends PositionsElement {
      * @param status Neuer Status der Kuh
      */
     private void setzeStatus(StatusTyp status) {
-        StatusTyp oldStatus = this.status;
+        Rindvieh oldRindvieh = kopiere();
         this.status = status;
+        Rindvieh newRindvieh = kopiere();
 
-        informiereBeobachter(PROPERTY_STATUS, oldStatus, status);
+        informiereBeobachter(PROPERTY_STATUS, oldRindvieh, newRindvieh);
     }
 
     /**
@@ -145,10 +146,11 @@ public class Rindvieh extends PositionsElement {
      * @param milchImEuter Neue Milchmenge
      */
     private void setMilchImEuter(Integer milchImEuter) {
-        Integer oldMilchImEuter = this.milchImEuter;
+        Rindvieh oldRindvieh = kopiere();
         this.milchImEuter = milchImEuter;
+        Rindvieh newRindvieh = kopiere();
 
-        informiereBeobachter(PROPERTY_MILCH, oldMilchImEuter, milchImEuter);
+        informiereBeobachter(PROPERTY_MILCH, oldRindvieh, newRindvieh);
     }
 
     /**
@@ -168,9 +170,11 @@ public class Rindvieh extends PositionsElement {
      * @param richtung Neue Richtung
      */
     protected void setRichtung(RichtungsTyp richtung) {
-        RichtungsTyp oldRichtung = this.richtung;
+        Rindvieh oldRindvieh = kopiere();
         this.richtung = richtung;
-        informiereBeobachter(PROPERTY_RICHTUNG, oldRichtung, richtung);
+        Rindvieh newRindvieh = kopiere();
+
+        informiereBeobachter(PROPERTY_RICHTUNG, oldRindvieh, newRindvieh);
     }
 
     /**
@@ -387,5 +391,31 @@ public class Rindvieh extends PositionsElement {
      */
     public boolean gehtsDaWeiterZurueck() {
         return gehtsDaWeiter(false);
+    }
+
+    /**
+     * @return Kopie der Kuh
+     */
+    @Override
+    public Rindvieh kopiere() {
+        // Rindvieh incl. dessen Name kopieren
+        Rindvieh kopie = new Rindvieh(name);
+        kopiere(kopie);
+        return kopie;
+    }
+
+    /**
+     * Kopiert die eigenen Attribute in die Kopie.
+     *
+     * @param kopie Kopie von this
+     */
+    protected void kopiere(Rindvieh kopie) {
+        // geerbtes kopieren
+        super.kopiere(kopie);
+
+        // eigene Attribute kopieren
+        kopie.milchImEuter = milchImEuter;
+        kopie.status = status;
+        kopie.richtung = richtung;
     }
 }
