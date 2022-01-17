@@ -15,7 +15,7 @@ package herdenmanagement.model;
 public class TanzRind extends Rindvieh {
 
     /**
-     * Erzeugt ein TanzRind. Es wird nur der geebrte Contructor aufgerufen.
+     * Erzeugt ein TanzRind. Es wird nur der geerbte Contructor aufgerufen.
      *
      * @param name Name des Rindviehs
      */
@@ -28,7 +28,6 @@ public class TanzRind extends Rindvieh {
      */
     protected Position gibNaechstePositionRechts() {
         Position position = gibPosition();
-
 
         return position;
     }
@@ -68,14 +67,14 @@ public class TanzRind extends Rindvieh {
     /**
      * Prüft die Grenzen des Ackers.
      *
-     * @return true, wenn die Kuh auf dem Acker weiter nach links gehen kann
+     * @return true, wenn die Kuh auf dem Acker weiter nach rechts gehen kann
      */
     public boolean gehtsDaRechtsWeiter() {
         return false;
     }
 
     /**
-     * Das TanzRind tanzt Cha Cha Cha!
+     * Das TanzRind tanzt Cha-Cha-Cha!
      */
     public void chaChaCha() {
 
