@@ -6,9 +6,9 @@ import herdenmanagement.model.Rindvieh;
 import herdenmanagement.view.AckerView;
 
 /**
- * Die Klasse dient der Orginisation von Rinderherden. Hierzu werden auf einem {@link Acker}
- * Objekte der Klase {@link herdenmanagement.model.Eimer} und {@link herdenmanagement.model.Gras}
- * positioniert. Objekte der Klasse {@link Rindvieh} könen sich auf einem Acker bewegen
+ * Die Klasse dient der Organisation von Rinderherden. Hierzu werden auf einem {@link Acker}
+ * Objekte der Klasse {@link herdenmanagement.model.Eimer} und {@link herdenmanagement.model.Gras}
+ * positioniert. Objekte der Klasse {@link Rindvieh} können sich auf einem Acker bewegen
  * und das Gras fressen oder rauchen. Steht auf der aktuellen Position einer Kuh ein Eimer,
  * kann diese auch gemolken werden.
  * <p>
