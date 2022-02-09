@@ -5,14 +5,23 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
+
+import android.graphics.BlurMaskFilter;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.transition.TransitionManager;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
 import herdenmanagement.model.Position;
 import herdenmanagement.model.PositionsElement;
@@ -20,10 +29,12 @@ import herdenmanagement.model.PositionsElement;
 /**
  * Basisklasse für die Darstellung von Eimer, Kühen, etc. Diese View kann auf Änderungen
  * an den Properties ihres PositionsElements reagieren, in der Regel durch Anpassung der Anzeige.
+ * Wird die Eigenschaft elevation mit {@link #setElevation(float)} angepasst, werfen
+ * Objekte dieser Klasse einen Schatten auf den Acker.
  * <p>
- * Im Muster Model View Controller (MVC) sind Objekte dieser Klasse Bestandteil des Model.
+ * Im Muster Model View Controller (MVC) sind Objekte dieser Klasse Bestandteil der View.
  * <p>
- * Im Muster Obersever ist die Klasse ein ConcreteObserer, der PropertyChangeListener
+ * Im Muster Obersever ist die Klasse ein ConcreteObserver, der PropertyChangeListener
  * ist das implementierte Observer Interface.
  *
  * @author Steffen Greiffenberg
@@ -66,8 +77,52 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
         setId(positionsElement.gibId());
 
         // Bild setzen
-        setPadding(4, 4, 4, 4);
-        setImageBitmap(getAktuellesBild());
+        // Bild aktualisieren
+        final Bitmap bitmap = getAktuellesBild();
+        setImageBitmap(bitmap);
+    }
+
+    /**
+     * Setzt das Bild für das Positionselement.
+     * Wenn diese View einen Abstand auf der z-Achse im Property elevation
+     * besitzt, wird ein Schatten hinzugefügt.
+     *
+     * @param bild darzustellendes Bild
+     */
+    @Override
+    public void setImageBitmap(Bitmap bild) {
+        if (getElevation() == 0 || bild.getWidth() == 0) {
+            super.setImageBitmap(bild);
+            return;
+        }
+
+        // je größer das Bild, um so größer muss auch der Schatten im Verhältnis sein
+        float shadowSize = getElevation() * 500 / bild.getWidth();
+
+        // Paint für den Schatten des Bildes
+        final Paint ptBlur = new Paint();
+        ptBlur.setMaskFilter(new BlurMaskFilter(shadowSize, BlurMaskFilter.Blur.NORMAL));
+
+        // Der Schatten ist nicht genau unter dem Original, sondern leicht versetzt
+        int[] offsetXY = new int[2];
+        Bitmap bmAlpha = bild.extractAlpha(ptBlur, offsetXY);
+
+        // Gesamtbild erzeugen und mit transparenter Farbe füllen
+        final Bitmap bildMitSchatten = Bitmap.createBitmap(bmAlpha.getWidth(), bmAlpha.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bildMitSchatten);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
+        // Farbe für den Schatten erzeugen
+        final Paint ptAlphaColor = new Paint();
+        ptAlphaColor.setColor(Color.DKGRAY);
+
+        // Schatten zeichnen
+        canvas.drawBitmap(bmAlpha, 0, 0, ptAlphaColor);
+        bmAlpha.recycle();
+
+        // Originales Bild zeichnen und geerbete Methode damit aufrufen
+        canvas.drawBitmap(bild, - offsetXY[0] / 1.5f, - offsetXY[1] / 1.5f, null);
+        super.setImageBitmap(bildMitSchatten);
     }
 
     /**
@@ -113,7 +168,7 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
         // Bei Änderungen der Position, muss ein neues Layout berechnet werden
         else if (PositionsElement.PROPERTY_POSITION.equals(evt.getPropertyName())) {
             // Möglicherweise ist die GUI noch nicht geladen
-            AckerView ackerView = (AckerView) getParent();
+            final AckerView ackerView = (AckerView) getParent();
             if (ackerView == null) {
                 return;
             }
@@ -167,8 +222,8 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
      */
     @NonNull
     public FrameLayout.LayoutParams calculateLayoutParams(float width, float height) {
-        Acker acker = positionsElement.gibAcker();
-        Position position = positionsElement.gibPosition();
+        final Acker acker = positionsElement.gibAcker();
+        final Position position = positionsElement.gibPosition();
 
         int columns = acker == null ? 0 : acker.zaehleSpalten();
         float columnWidth = (int) (width / columns);
@@ -184,8 +239,6 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
         result.height = (int) rowHeight;
         result.leftMargin = (int) (position.x * columnWidth);
         result.topMargin = (int) (position.y * rowHeight);
-
-        System.out.println(" lm: " + result.leftMargin);
 
         return result;
     }
