@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    // new attribute for AckerView
+    <attr name="cellBackgroundColor" format="color"/>
+    <attr name="cellSpacing" format="dimension"/>
+
+    // declaration of attributes for AckerView
+    <declare-styleable name="AckerView">
+        // reuse of android attr, skip the type
+        <attr name="android:textColor"/>
+        <attr name="android:textSize"/>
+        <attr name="cellSpacing"/>
+        <attr name="cellBackgroundColor"/>
+    </declare-styleable>
+
+    // style reference for use in themes
+    <attr name="ackerViewStyle" format="reference"/>
+
+    // default style of an AckerView
+    <style name="AckerViewStyle">
+        <item name="android:textColor">@android:color/tertiary_text_light</item>
+        <item name="android:textSize">40sp</item>
+        <item name="cellSpacing">8dp</item>
+        <item name="cellBackgroundColor">@android:color/background_light</item>
+    </style>
+
+</resources>

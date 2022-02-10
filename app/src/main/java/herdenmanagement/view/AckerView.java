@@ -1,6 +1,7 @@
 package herdenmanagement.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,6 +15,7 @@ import android.widget.FrameLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
 import herdenmanagement.model.Eimer;
 import herdenmanagement.model.Gras;
@@ -21,7 +23,7 @@ import herdenmanagement.model.Rindvieh;
 
 /**
  * Basisklasse für die Darstellung von Bundesländern wie Macklemburg-Vorpommern.
- *
+ * <p>
  * Die AckerView ist Observer des Ackers. Werden auf letzterem Eimer, Gräser und Lebewesen
  * (insbesondere Kühe) eingefügt, informiert der Acker Objekte dieser Klasse AckerView über
  * die Änderungen. Es ist Aufgabe der AckerView für die neuen Elemente korrespondierend eine
@@ -42,8 +44,30 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
      */
     private Acker acker;
 
+    /**
+     * Paint to draw a text. Reused in {@link #onDraw(Canvas)}
+     */
+    private final TextPaint textPaint = new TextPaint();
+
+    /**
+     * Paint to draw lines. Reused in {@link #onDraw(Canvas)}
+     */
+    private final Paint paint = new Paint();
+
+    /**
+     * Abstand der Zellen
+     */
+    private float cellSpacing;
+
+    /**
+     * Erzeugt eine neue Ansicht für einen Acker
+     *
+     * @param context Context der App
+     */
     public AckerView(Context context) {
-        super(context);
+        super(context, null, R.attr.ackerViewStyle);
+        initAckerView(null, R.attr.ackerViewStyle);
+
         setWillNotDraw(false);
         animator = new Animator(context);
     }
@@ -55,9 +79,10 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
      * @param attrs   Attribute zur grafischen Darstellung
      */
     public AckerView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        setWillNotDraw(false);
+        super(context, attrs, R.attr.ackerViewStyle);
+        initAckerView(attrs, R.attr.ackerViewStyle);
 
+        setWillNotDraw(false);
         animator = new Animator(context);
     }
 
@@ -70,9 +95,38 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
      */
     public AckerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setWillNotDraw(false);
+        initAckerView(attrs, defStyleAttr);
 
+        setWillNotDraw(false);
         animator = new Animator(context);
+    }
+
+    /**
+     * Initialisieren der View mit ihren Attributen
+     *
+     * @param attrs Attribute des aktuellen Layouts
+     * @param defStyleAttr Voreingestellte Attribute
+     */
+    private void initAckerView(AttributeSet attrs, int defStyleAttr) {
+        // Attribute incl. default-Werte lesen
+        TypedArray a = getContext().obtainStyledAttributes(
+                attrs, R.styleable.AckerView, defStyleAttr, R.style.AckerViewStyle);
+
+        // Abstand der Zellen
+        cellSpacing = a.getDimensionPixelSize(R.styleable.AckerView_cellSpacing, 8);
+
+        // Färbung der Zellen
+        int cellColor = a.getColor(R.styleable.AckerView_cellBackgroundColor, Color.WHITE);
+        paint.setColor(cellColor);
+        paint.setStrokeWidth(6);
+
+        // Text in den Zellen
+        int textColor = a.getColor(R.styleable.AckerView_android_textColor, Color.LTGRAY);
+        textPaint.setColor(textColor);
+        int textSize = a.getDimensionPixelSize(R.styleable.AckerView_android_textSize, 40);
+        textPaint.setTextSize(textSize);
+
+        a.recycle();
     }
 
     public Animator.Threading getThreading() {
@@ -173,57 +227,45 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
     }
 
     /**
-     * Paint to draw a text. Reused in {@link #onDraw(Canvas)}
+     * Cache zur Berechnung des Textbereichs
      */
-    private static final TextPaint TEXT_PAINT = new TextPaint();
-    static {
-        TEXT_PAINT.setTextSize(40);
-        TEXT_PAINT.setColor(Color.LTGRAY);
-    }
+    private final Rect TEXT_RECT = new Rect();
 
     /**
-     * Paint to draw lines. Reused in {@link #onDraw(Canvas)}
+     * Zeichnet den Acker
+     *
+     * @param canvas Zeichenfläche
      */
-    private static final Paint PAINT = new Paint();
-    static {
-        PAINT.setColor(Color.WHITE);
-        PAINT.setStrokeWidth(6);
-    }
-
-    private static final Rect TEXT_RECT = new Rect();
-
     protected void onDraw(Canvas canvas) {
-        if (acker != null) {
-            // Anzahl der Spalten und deren Breite ermitteln
-            int columns = acker.zaehleSpalten();
-            float columnWidth = getWidth() / (float)columns;
+        // Anzahl der Spalten und deren Breite ermitteln
+        int columns = acker == null ? 3 : acker.zaehleSpalten();
+        float columnWidth = getWidth() / (float) columns;
 
-            // Anzahl der Zeilen und deren Höhe ermitteln
-            int rows = acker.zaehleZeilen();
-            float rowHeight = getHeight() / (float)rows;
+        // Anzahl der Zeilen und deren Höhe ermitteln
+        int rows = acker == null ? 5 : acker.zaehleZeilen();
+        float rowHeight = getHeight() / (float) rows;
 
-            // Zeilenweise ....
-            for (int y = 0; y < rows; y++) {
+        // Zeilenweise ....
+        for (int y = 0; y < rows; y++) {
 
-                // .... alle Spalten zeichnen
-                for (int x = 0; x < columns; x++) {
-                    // Hintergrund füllen
-                    canvas.drawRect(
-                            x * columnWidth + 4,
-                            y * rowHeight + 4,
-                            (x + 1) * columnWidth - 8,
-                            (y + 1) * rowHeight - 8,
-                            PAINT);
+            // .... alle Spalten zeichnen
+            for (int x = 0; x < columns; x++) {
+                // Hintergrund der Zellen füllen
+                canvas.drawRect(
+                        x * columnWidth + cellSpacing / 2,
+                        y * rowHeight + cellSpacing / 2,
+                        (x + 1) * columnWidth - cellSpacing,
+                        (y + 1) * rowHeight - cellSpacing,
+                        paint);
 
-                    // textgröße berechnen und Text zentriert zeichnen
-                    String text = x + ":" + y;
-                    TEXT_PAINT.getTextBounds(text, 0, text.length(), TEXT_RECT);
-                    canvas.drawText(
-                            text,
-                            ((x + 0.5f) * columnWidth) - (TEXT_RECT.width() / 2.0f),
-                            ((y + 0.5f) * rowHeight) + (TEXT_RECT.height() / 2.0f),
-                            TEXT_PAINT);
-                }
+                // textgröße berechnen und Text zentriert zeichnen
+                String text = x + ":" + y;
+                textPaint.getTextBounds(text, 0, text.length(), TEXT_RECT);
+                canvas.drawText(
+                        text,
+                        ((x + 0.5f) * columnWidth) - (TEXT_RECT.width() / 2.0f),
+                        ((y + 0.5f) * rowHeight) + (TEXT_RECT.height() / 2.0f),
+                        textPaint);
             }
         }
 
@@ -362,7 +404,7 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
     /**
      * Fügt dem Acker eine neue Darstellung für Eimer, Gras, etc. hinzu
      *
-     * @param view Hinzufügende View
+     * @param view  Hinzufügende View
      * @param onTop true fürgt die View über alle anderen ein
      */
     private void addViewAmimated(final View view, final boolean onTop) {
