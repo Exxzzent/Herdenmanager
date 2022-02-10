@@ -16,6 +16,7 @@
         android:allowBackup="true">
         <activity
             android:name="herdenmanagement.MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:launchMode="singleTask"
             android:exported="true">
 
