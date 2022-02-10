@@ -11,17 +11,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.transition.TransitionManager;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
 import herdenmanagement.model.Position;
 import herdenmanagement.model.PositionsElement;
@@ -77,9 +74,23 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
         setId(positionsElement.gibId());
 
         // Bild setzen
-        // Bild aktualisieren
         final Bitmap bitmap = getAktuellesBild();
         setImageBitmap(bitmap);
+    }
+
+    /**
+     * Bei Änderung der Höhe des Elements muss der Schatten des
+     * Bildes neu berechnet werden
+     *
+     * @param elevation Höhe dieser View über der ViewGroup
+     */
+    public void setElevation(float elevation) {
+        if (elevation != getElevation()) {
+            super.setElevation(elevation);
+
+            final Bitmap bitmap = getAktuellesBild();
+            setImageBitmap(bitmap);
+        }
     }
 
     /**
