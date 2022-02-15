@@ -2,22 +2,23 @@ package herdenmanagement;
 
 import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
+import herdenmanagement.model.Position;
 import herdenmanagement.model.Rindvieh;
 import herdenmanagement.view.AckerView;
 
 /**
  * Die Klasse dient der Organisation von Rinderherden. Hierzu werden auf einem {@link Acker}
- * Objekte der Klasse {@link herdenmanagement.model.Eimer} und {@link herdenmanagement.model.Gras}
+ * Objekte der Klasse {@link herdenmanagement.model.Kalb} und {@link herdenmanagement.model.Gras}
  * positioniert. Objekte der Klasse {@link Rindvieh} können sich auf einem Acker bewegen
- * und das Gras fressen oder rauchen. Steht auf der aktuellen Position einer Kuh ein Eimer,
+ * und das Gras fressen oder rauchen. Steht auf der aktuellen Position einer Kuh ein Kalb,
  * kann diese auch gemolken werden.
  * <p>
  * Mit einer {@link AckerView} wird ein erzeugter Acker auch grafisch angezeigt.
- * Auf diesem können Instanzen von {@link Rindvieh}, {@link herdenmanagement.model.Eimer} und
+ * Auf diesem können Instanzen von {@link Rindvieh}, {@link herdenmanagement.model.Kalb} und
  * {@link herdenmanagement.model.Gras} eingefügt werden.
  * <p>
  * Im Muster Model View Controller (MVC) entsprechen Objekte dieser Klasse dem Controller.
- * {@link Acker}, {@link Rindvieh}, {@link herdenmanagement.model.Eimer} und
+ * {@link Acker}, {@link Rindvieh}, {@link herdenmanagement.model.Kalb} und
  * {@link herdenmanagement.model.Gras} bilden im MVC Muster das Model. Im Muster Observer
  * stellen sie die beobachtbaren Objekte dar. Die eigentliche grafische Darstellung des Models
  * erfolgt in den View-Klassen des MVC Musters (also zum Beispiel in der Klasse
@@ -45,7 +46,7 @@ public class HerdenManager {
 
     /**
      * Aufruf zur Erzeugung eines HerdenManagers.
-     * Diese Methode lässt zum Beispiel Gras wachsen und stellt Eimer auf.
+     * Diese Methode lässt zum Beispiel Gras wachsen und stellt Kälber auf.
      * Die Einrichtung des Ackers wird nicht animiert dargestellt.
      *
      * @param mainActivity Hauptaktivität der App
@@ -60,6 +61,12 @@ public class HerdenManager {
 
         // AckerView mit Acker verknüpfen
         ackerView.setAcker(acker);
+
+        acker.lassKalbWeiden(new Position(1, 1));
+        acker.lassGrasWachsen(new Position(2, 1));
+
+        vera = new Rindvieh("Vera Vollmilch");
+        acker.lassRindWeiden(vera);
     }
 
     /**

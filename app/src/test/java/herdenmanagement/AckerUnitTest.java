@@ -80,9 +80,9 @@ public class AckerUnitTest {
         assertFalse(acker.istDaGras(new Position(2, 2)));
         assertTrue(entfernt);
 
-        acker.stelleEimerAuf(new Position(4, 0));
-        assertFalse(acker.istDaEinEimer(new Position(4, 3)));
-        assertTrue(acker.istDaEinEimer(new Position(4, 0)));
+        acker.lassKalbWeiden(new Position(4, 0));
+        assertFalse(acker.istDaEinKalb(new Position(4, 3)));
+        assertTrue(acker.istDaEinKalb(new Position(4, 0)));
     }
 
     @Test
@@ -95,12 +95,12 @@ public class AckerUnitTest {
         acker.lassGrasWachsen(new Position(0, 0));
         rindvieh.frissGras();
 
-        // dort steht kein Eimer, kann also nicht funktionieren
+        // dort steht kein Kalb, kann also nicht funktionieren
         int milch = rindvieh.gibMilch();
         assertEquals(0, milch);
 
-        // Eimer aufstellen
-        acker.stelleEimerAuf(new Position(0, 0));
+        // Kalb aufstellen
+        acker.lassKalbWeiden(new Position(0, 0));
         milch = rindvieh.gibMilch();
         assertEquals(1, milch);
     }

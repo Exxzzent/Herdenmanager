@@ -25,6 +25,7 @@ public class GrasView extends PositionElementView {
      */
     public GrasView(Context context, Animator animator, Gras gras) {
         super(context, animator, gras);
+        setElevation(20);
     }
 
     protected Bitmap getAktuellesBild() {

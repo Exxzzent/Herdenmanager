@@ -24,7 +24,7 @@ import herdenmanagement.model.Position;
 import herdenmanagement.model.PositionsElement;
 
 /**
- * Basisklasse für die Darstellung von Eimer, Kühen, etc. Diese View kann auf Änderungen
+ * Basisklasse für die Darstellung von Kälbern, Kühen, etc. Diese View kann auf Änderungen
  * an den Properties ihres PositionsElements reagieren, in der Regel durch Anpassung der Anzeige.
  * Wird die Eigenschaft elevation mit {@link #setElevation(float)} angepasst, werfen
  * Objekte dieser Klasse einen Schatten auf den Acker.
@@ -108,7 +108,7 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
         }
 
         // je größer das Bild, um so größer muss auch der Schatten im Verhältnis sein
-        float shadowSize = getElevation() * 500 / bild.getWidth();
+        float shadowSize = getElevation() * bild.getWidth() / 500;
 
         // Paint für den Schatten des Bildes
         final Paint ptBlur = new Paint();

@@ -8,7 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import herdenmanagement.model.Acker;
-import herdenmanagement.model.Eimer;
+import herdenmanagement.model.Kalb;
 import herdenmanagement.model.Gras;
 import herdenmanagement.model.Position;
 import herdenmanagement.model.PositionsElement;
@@ -38,9 +38,9 @@ public class ObserverUnitTest {
         assertEquals(Acker.PROPERTY_GRAESER, evt.getPropertyName());
         assertTrue(evt.getNewValue() instanceof Gras);
 
-        acker.stelleEimerAuf(new Position(2, 2));
-        assertEquals(Acker.PROPERTY_EIMER, evt.getPropertyName());
-        assertTrue(evt.getNewValue() instanceof Eimer);
+        acker.lassKalbWeiden(new Position(2, 2));
+        assertEquals(Acker.PROPERTY_KALB, evt.getPropertyName());
+        assertTrue(evt.getNewValue() instanceof Kalb);
 
         Rindvieh rindvieh = new Rindvieh("Rindvieh");
         acker.lassRindWeiden(rindvieh);

@@ -1,7 +1,5 @@
 package herdenmanagement.model;
 
-import androidx.annotation.NonNull;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -72,7 +70,7 @@ public class Rindvieh extends PositionsElement {
     /**
      * Anzahl (Liter) Milch im Euter. Die Zahl erhöht sich durch {@link #frissGras()}. Sie
      * wird reduziert durch {@link #gibMilch()}. Das Melken funktioniert jedoch nur,
-     * wenn auf dem Acker an dieser Stelle ein Eimer steht.
+     * wenn auf dem Acker an dieser Stelle ein Kalb steht.
      */
     private int milchImEuter;
 
@@ -178,40 +176,54 @@ public class Rindvieh extends PositionsElement {
     }
 
     /**
-     * Auf Basis der aktuellen Blickrichtung und Position der Kuh wird das Feld vor oder hinter
+     * Auf Basis der aktuellen Blickrichtung und Position der Kuh wird das Feld vor
      * der Kuh berechnet. Hier erfolgt noch keine Prüfung, ob diese Position auf dem {@link Acker}
      * auch wirklich existiert.
      *
-     * @param vor true = Prüfung in Blickrichtung der Kuh, false = Prüfung entgegen der Blickrichtung
-     * @return Position vor oder hinter Kuh
+     * @return Position vor der Kuh
      */
-    protected Position gibNaechstePosition(boolean vor) {
-        Position position = gibPosition();
+    protected Position gibNaechstePositionDavor() {
+        Position position = new Position(gibPosition());
 
-        // Das ? steht für eine bedingte Zuweisung. Die Zeile
-        //
-        //     position.y = position.y + (vor ? -1 : 1);
-        //
-        // kann übersetzt werden in:
-        //
-        //     if (vor) {
-        //         position.y = position.y + -1;
-        //     } else {
-        //         position.y = position.y + 1;
-        //     }
-        //
         switch (gibRichtung()) {
             case NORD:
-                position.y = position.y + (vor ? -1 : 1);
+                position.y = position.y -1;
                 break;
             case OST:
-                position.x = position.x + (vor ? 1 : -1);
+                position.x = position.x + 1;
                 break;
             case SUED:
-                position.y = position.y + (vor ? 1 : -1);
+                position.y = position.y + 1;
                 break;
             case WEST:
-                position.x = position.x + (vor ? -1 : 1);
+                position.x = position.x -1;
+        }
+
+        return position;
+    }
+
+    /**
+     * Auf Basis der aktuellen Blickrichtung und Position der Kuh wird das Feld vhinter
+     * der Kuh berechnet. Hier erfolgt noch keine Prüfung, ob diese Position auf dem {@link Acker}
+     * auch wirklich existiert.
+     *
+     * @return Position vor oder hinter Kuh
+     */
+    protected Position gibNaechstePositionDahiner() {
+        Position position = new Position(gibPosition());
+
+        switch (gibRichtung()) {
+            case NORD:
+                position.y = position.y + 1;
+                break;
+            case OST:
+                position.x = position.x -1;
+                break;
+            case SUED:
+                position.y = position.y - 1;
+                break;
+            case WEST:
+                position.x = position.x + 1;
         }
 
         return position;
@@ -222,8 +234,8 @@ public class Rindvieh extends PositionsElement {
      * möglich, wenn vor der Kuh auf dem {@link Acker} noch ein Feld existiert.
      */
     public void geheVor() {
-        if (gehtsDaWeiter(true)) {
-            Position newPosition = gibNaechstePosition(true);
+        if (gehtsDaWeiterVor()) {
+            Position newPosition = gibNaechstePositionDavor();
             setzePosition(newPosition);
         } else {
             zeigeNachricht(R.string.rindvieh_vor_mir_kein_acker);
@@ -236,8 +248,8 @@ public class Rindvieh extends PositionsElement {
      * möglich, wenn hinter der Kuh auf dem {@link Acker} noch ein Feld existiert.
      */
     public void geheZurueck() {
-        if (gehtsDaWeiter(false)) {
-            Position newPosition = gibNaechstePosition(false);
+        if (gehtsDaWeiterZurueck()) {
+            Position newPosition = gibNaechstePositionDahiner();
             setzePosition(newPosition);
         } else {
             zeigeNachricht(R.string.rindvieh_hinter_mir_kein_acker);
@@ -318,7 +330,7 @@ public class Rindvieh extends PositionsElement {
     }
 
     /**
-     * Steht an der aktuellen Position auf dem {@link Acker} auch ein {@link Eimer}, kann die
+     * Steht an der aktuellen Position auf dem {@link Acker} auch ein {@link Kalb}, kann die
      * Kuh gemolken werden. Nach dem Melken ist die Anzahl in {@link #milchImEuter} natürlich 0.
      * Soll eine Kuh ohne Milch im Euter gemolken werden, wird auch eine Fehlernachricht mittels
      * {@link #setzeNachricht(String)} gespeichert.
@@ -331,7 +343,7 @@ public class Rindvieh extends PositionsElement {
     public int gibMilch() {
         int result = messeMilchImEuter();
 
-        if (gibAcker().istDaEinEimer(gibPosition())) {
+        if (gibAcker().istDaEinKalb(gibPosition())) {
             if (istMilchImEuter()) {
                 setMilchImEuter(0);
             } else {
@@ -339,7 +351,7 @@ public class Rindvieh extends PositionsElement {
             }
         } else {
             result = 0;
-            zeigeNachricht(R.string.rindvieh_kein_eimer);
+            zeigeNachricht(R.string.rindvieh_kein_kalb);
         }
         return result;
     }
@@ -359,19 +371,6 @@ public class Rindvieh extends PositionsElement {
     }
 
     /**
-     * Bei der Bewegung nach vorn oder hinten darf die Kuh nicht die Grenzen des Ackers
-     * überschreiten. Diese werden hier geprüft. Die eigentliche Prüfung erfolgt durch
-     * {@link Acker#istPositionGueltig(Position)}.
-     *
-     * @param vor true = Prüfung einer Bwegung um ein Feld vorwärts, false = rückwärts
-     * @return true = Bewegung ist möglich
-     */
-    private boolean gehtsDaWeiter(boolean vor) {
-        Position naechstePosition = gibNaechstePosition(vor);
-        return gibAcker().istPositionGueltig(naechstePosition);
-    }
-
-    /**
      * Bei der Bewegung nach vorn darf die Kuh nicht die Grenzen des Ackers
      * überschreiten. Diese werden hier geprüft. Die eigentliche Prüfung erfolgt durch
      * {@link Acker#istPositionGueltig(Position)}.
@@ -379,7 +378,8 @@ public class Rindvieh extends PositionsElement {
      * @return true = Bewegung ist möglich
      */
     public boolean gehtsDaWeiterVor() {
-        return gehtsDaWeiter(true);
+        Position naechstePosition = gibNaechstePositionDavor();
+        return gibAcker().istPositionGueltig(naechstePosition);
     }
 
     /**
@@ -390,7 +390,8 @@ public class Rindvieh extends PositionsElement {
      * @return true = Bewegung ist möglich
      */
     public boolean gehtsDaWeiterZurueck() {
-        return gehtsDaWeiter(false);
+        Position naechstePosition = gibNaechstePositionDahiner();
+        return gibAcker().istPositionGueltig(naechstePosition);
     }
 
     /**

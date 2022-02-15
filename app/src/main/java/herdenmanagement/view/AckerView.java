@@ -17,17 +17,19 @@ import java.beans.PropertyChangeListener;
 
 import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
-import herdenmanagement.model.Eimer;
+import herdenmanagement.model.Kalb;
 import herdenmanagement.model.Gras;
+import herdenmanagement.model.Position;
 import herdenmanagement.model.Rindvieh;
+import herdenmanagement.model.Threading;
 
 /**
  * Basisklasse für die Darstellung von Bundesländern wie Macklemburg-Vorpommern.
  * <p>
- * Die AckerView ist Observer des Ackers. Werden auf letzterem Eimer, Gräser und Lebewesen
+ * Die AckerView ist Observer des Ackers. Werden auf letzterem Kälber, Gräser und Lebewesen
  * (insbesondere Kühe) eingefügt, informiert der Acker Objekte dieser Klasse AckerView über
  * die Änderungen. Es ist Aufgabe der AckerView für die neuen Elemente korrespondierend eine
- * {@link EimerView}, {@link GrasView} oder {@link RindviehView} zu erzeugen und als Child-Element
+ * {@link KalbView}, {@link GrasView} oder {@link RindviehView} zu erzeugen und als Child-Element
  * (siehe {@link #addView(View)}) anzuzeigen.
  *
  * @author Steffen Greiffenberg
@@ -129,14 +131,6 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
         a.recycle();
     }
 
-    public Animator.Threading getThreading() {
-        return animator.getThreading();
-    }
-
-    public void setThreading(Animator.Threading threading) {
-        animator.setThreading(threading);
-    }
-
     /**
      * Beim Setzen des Ackers werden die momentan auf diesem vorhandene PositionsElement Objekte
      * angezeigt.
@@ -147,15 +141,16 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
         // Wenn die View bereits mit einem verknüpft ist,
         // wird diese Verknüpfiung jetzt aufgehoben
         if (this.acker != null) {
+            animator.setThreading(Threading.ASYNCHRONOUS_NO_WAIT);
             this.acker.entferneBeobachter(this);
 
             // add initial objects from acker
             for (Rindvieh rindvieh : this.acker.getViecher()) {
-                aktualisiereViecher(rindvieh, null);
+                aktualisiereVieh(rindvieh, null);
             }
 
-            for (Eimer eimer : this.acker.getEimer()) {
-                aktualisiereEimer(eimer, null);
+            for (Kalb kalb : this.acker.getKaelber()) {
+                aktualisiereKalb(kalb, null);
             }
 
             for (Gras gras : this.acker.getGraeser()) {
@@ -172,16 +167,18 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
         // Die Verknüpfung mit dem neuen Acker herstellen
         this.acker.fuegeBeobachterHinzu(this);
         for (Rindvieh rindvieh : acker.getViecher()) {
-            aktualisiereViecher(null, rindvieh);
+            aktualisiereVieh(null, rindvieh);
         }
 
-        for (Eimer eimer : acker.getEimer()) {
-            aktualisiereEimer(null, eimer);
+        for (Kalb kalb : acker.getKaelber()) {
+            aktualisiereKalb(null, kalb);
         }
 
         for (Gras gras : acker.getGraeser()) {
             aktualisiereGraeser(null, gras);
         }
+
+        animator.setThreading(acker.gibAnimation());
     }
 
     /**
@@ -258,6 +255,10 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
                         (y + 1) * rowHeight - cellSpacing,
                         paint);
 
+                if (acker.istDaGras(new Position(x, y)) || acker.istDaEinKalb(new Position(x, y))) {
+                    continue;
+                }
+
                 // textgröße berechnen und Text zentriert zeichnen
                 String text = x + ":" + y;
                 textPaint.getTextBounds(text, 0, text.length(), TEXT_RECT);
@@ -296,22 +297,26 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
     }
 
     /**
-     * Legt die GUI Elemente an, wenn Eimer, Gräser etc. angelegt wurden
+     * Legt die GUI Elemente an, wenn Kalb, Gräser etc. angelegt wurden
      *
-     * @param evt Interessant sind z.B. die Nachrichten mit den Property-Name Acker.PROPERTY_EIMER
+     * @param evt Interessant sind z.B. die Nachrichten mit den Property-Name Acker.PROPERTY_KALB
      */
     @Override
     public void propertyChange(final PropertyChangeEvent evt) {
-        if (Acker.PROPERTY_EIMER.equals(evt.getPropertyName())) {
-            aktualisiereEimer((Eimer) evt.getOldValue(), (Eimer) evt.getNewValue());
+        if (Acker.PROPERTY_KALB.equals(evt.getPropertyName())) {
+            aktualisiereKalb((Kalb) evt.getOldValue(), (Kalb) evt.getNewValue());
         }
 
         if (Acker.PROPERTY_VIECHER.equals(evt.getPropertyName())) {
-            aktualisiereViecher((Rindvieh) evt.getOldValue(), (Rindvieh) evt.getNewValue());
+            aktualisiereVieh((Rindvieh) evt.getOldValue(), (Rindvieh) evt.getNewValue());
         }
 
         if (Acker.PROPERTY_GRAESER.equals(evt.getPropertyName())) {
             aktualisiereGraeser((Gras) evt.getOldValue(), (Gras) evt.getNewValue());
+        }
+
+        if (Acker.PROPERTY_THREADING.equals(evt.getPropertyName())) {
+            animator.setThreading((Threading) evt.getNewValue());
         }
     }
 
@@ -327,7 +332,7 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
     private void aktualisiereGraeser(final Gras oldValue, final Gras newValue) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this);
-            addViewAmimated(new GrasView(getContext(), animator, newValue), false);
+            addViewAmimated(new GrasView(getContext(), animator, newValue));
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this);
             removeViewAnimated(oldValue.gibId());
@@ -343,10 +348,10 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
      * @param oldValue Neues Objekt auf dem Acker
      * @param newValue Bereits auf dem Acker vorhandenes Objekt
      */
-    private void aktualisiereViecher(final Rindvieh oldValue, final Rindvieh newValue) {
+    private void aktualisiereVieh(final Rindvieh oldValue, final Rindvieh newValue) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this);
-            addViewAmimated(new RindviehView(getContext(), animator, newValue), true);
+            addViewAmimated(new RindviehView(getContext(), animator, newValue));
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this);
             removeViewAnimated(oldValue.gibId());
@@ -354,7 +359,7 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
     }
 
     /**
-     * Aktualisiert die Ansicht für die Eimer. Für neue Objekte
+     * Aktualisiert die Ansicht für die Kälber. Für neue Objekte
      * (newValue != null && oldValue == null) wird eine View erzeugt.
      * Bei zu entfernenden Objekte (newValue == null && oldValue != null)
      * wird auch die View entfernt.
@@ -362,10 +367,10 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
      * @param oldValue Neues Objekt auf dem Acker
      * @param newValue Bereits auf dem Acker vorhandenes Objekt
      */
-    private void aktualisiereEimer(final Eimer oldValue, final Eimer newValue) {
+    private void aktualisiereKalb(final Kalb oldValue, final Kalb newValue) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this);
-            addViewAmimated(new EimerView(getContext(), animator, newValue), false);
+            addViewAmimated(new KalbView(getContext(), animator, newValue));
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this);
             removeViewAnimated(oldValue.gibId());
@@ -402,12 +407,11 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
     }
 
     /**
-     * Fügt dem Acker eine neue Darstellung für Eimer, Gras, etc. hinzu
+     * Fügt dem Acker eine neue Darstellung für Kalb, Gras, etc. hinzu
      *
      * @param view  Hinzufügende View
-     * @param onTop true fürgt die View über alle anderen ein
      */
-    private void addViewAmimated(final View view, final boolean onTop) {
+    private void addViewAmimated(final View view) {
         animator.performAction(new Animator.Action() {
             @Override
             public void run() {
@@ -417,11 +421,7 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
                 TransitionManager.beginDelayedTransition(AckerView.this);
                 view.setAlpha(1);
 
-                if (onTop) {
-                    addView(view);
-                } else {
-                    addView(view, 0);
-                }
+                addView(view);
 
                 // layout anpassen?
                 requestLayout();

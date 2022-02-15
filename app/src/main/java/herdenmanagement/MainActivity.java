@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import de.ba.herdenmanagement.R;
 import herdenmanagement.model.Acker;
 import herdenmanagement.view.AckerView;
-import herdenmanagement.view.Animator;
+import herdenmanagement.model.Threading;
 
 /**
  * Die Klasse wurde vom Android angelegt und sorgt für die Anzeige der App auf dem Handy.
@@ -48,16 +48,14 @@ public class MainActivity extends AppCompatActivity {
         herdenManager = new HerdenManager();
 
         new Thread(() -> {
-            // Während manageHerde möchten wir alle Aktionen sehen
-            AckerView ackerView = findViewById(R.id.acker_view);
-
-            // Acker einrichten, dies soll in einem "Rutsch" passieren,
-            // die einzelnen Aktionen werden nicht animiert
-            ackerView.setThreading(Animator.Threading.ASYNCHRONOUS_NO_WAIT);
+            // Acker einrichten
             herdenManager.richteAckerEin(MainActivity.this);
 
             // Während manageHerde möchten wir alle Aktionen einzeln nachvollziehen
-            ackerView.setThreading(Animator.Threading.SYNCHRONOUS);
+            AckerView ackerView = findViewById(R.id.acker_view);
+            if (ackerView.getAcker() != null) {
+                ackerView.getAcker().setzeAnimation(Threading.SYNCHRONOUS);
+            }
 
             // Hier können vorprogrammierte Aktionen auf dem Acker stattfinden. Zum
             // Beispiel kann ein Rind auf dem Acker bewegt werden.
@@ -65,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Alle Aktionen auf dem Acker, die jetzt folgen, werden direkt asynchron
             // ausgeführt. Betroffen sind vor allem Button-Clicks.
-            ackerView.setThreading(Animator.Threading.ASYNCHRONOUS);
+            if (ackerView.getAcker() != null) {
+                ackerView.getAcker().setzeAnimation(Threading.ASYNCHRONOUS);
+            }
         }).start();
     }
 
@@ -92,10 +92,6 @@ public class MainActivity extends AppCompatActivity {
         // Den Acker der aktuellen AckerView ermitteln
         AckerView ackerView = findViewById(R.id.acker_view);
         Acker acker = ackerView.getAcker();
-
-        Animator.Threading currentThreading = ackerView.getThreading();
-        ackerView.setThreading(Animator.Threading.ASYNCHRONOUS_NO_WAIT);
-
         ackerView.setAcker(null);
 
         // Das neue Layout setzen
@@ -105,11 +101,8 @@ public class MainActivity extends AppCompatActivity {
         // Die AckerView dürfte sich durch die vorhergehende Anweisung geändert haben
         // Diese wird zukünftig vom vorhandenen Acker genutzt
         ackerView = findViewById(R.id.acker_view);
-        ackerView.setThreading(Animator.Threading.ASYNCHRONOUS_NO_WAIT);
         ackerView.setAcker(acker);
-
-        // Den Zustand des Threadings wieder herstellen
-        ackerView.setThreading(currentThreading);
+        ackerView.requestLayout();
     }
 }
 

@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "de.ba.herdenmanagement"
-        minSdkVersion 22
-        targetSdkVersion 29
-        versionCode 2
-        versionName "1.0.1"
+        minSdkVersion 24
+        targetSdkVersion 31
+        versionCode 3
+        versionName "1.1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
@@ -28,8 +28,8 @@ android {
 dependencies {
     // libraries from maven repositories
     // implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
 
     // compiling tests requires the dependencies of the source code under test
     testImplementation 'junit:junit:4.13.2'

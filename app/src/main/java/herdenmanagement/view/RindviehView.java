@@ -10,14 +10,13 @@ import android.text.TextPaint;
 
 import de.ba.herdenmanagement.R;
 
-import herdenmanagement.model.PositionsElement;
 import herdenmanagement.model.Rindvieh;
 
 /**
  * Die Klasse erbt von {@link PositionElementView} und überschreibt die dortige
  * Methode {@link #getAktuellesBild()}, um ein Rindvieh darzustellen. Da das Rind in
  * verschiedene Richtungen schauen kann, ist die Klasse komplizierter aufgebaut
- * als zum Beispiel die {@link EimerView}.
+ * als zum Beispiel die {@link KalbView}.
  *
  * @author Steffen Greiffenberg
  */
@@ -32,6 +31,7 @@ public class RindviehView extends PositionElementView {
      */
     public RindviehView(Context context, Animator animator, Rindvieh rindvieh) {
         super(context, animator, rindvieh);
+        setElevation(25);
     }
 
     /**

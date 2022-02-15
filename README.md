@@ -101,23 +101,23 @@ Rindvieh eumel = new Rindvieh("Eumel");
 acker.lassRindWeiden(eumel);
 ```
 
-Der Acker kann Eimer und Gräser an einer bestimmten Position erzeugen und
-sichtbar machen. Eimer und Gras werden mit der Aktion erstellt und müssen
+Der Acker kann Kälber und Gräser an einer bestimmten Position erzeugen und
+sichtbar machen. Kalb und Gras werden mit der Aktion erstellt und müssen
 nicht wie das Rindvieh bei lassRindWieden(...) vorher existieren.
-Die Methode benötigt die Position für den Eimer bzw. das Gras als
-Parameter: stelleEimerAuf(...), lassGrasWachsen(...)
+Die Methode benötigt die Position für das Kalb bzw. das Gras als
+Parameter:
 
 ```java
 Position p = new Position(3, 2);
-Eimer e = acker.stelleEimerAuf(p);
+Kalb k = acker.lassKalbWeiden(p);
 ```
 
-Der Acker kann über die bereits dargestellten Rinder, Eimer und Gräser
+Der Acker kann über die bereits dargestellten Rinder, Kälber und Gräser
 informieren. Die Methoden liefern entsprechende
-Listen: getEimer(), getGraeser(), getViecher()
+Listen: getKaelber(), getGraeser(), getViecher()
 
 ```java
-List<Eimer> eimerListe = acker.getEimer();
+List<Kalb> kaelberListe = acker.getKaelber();
 ```
 
 Wächst an einer Position Gras, kann es entfernt werden: 
@@ -137,17 +137,17 @@ boolean gueltig = acker.istPositionGueltig(p);
 ```
 
 Der Acker kann prüfen, ob derzeit an einer Position Gras wächst oder ein
-Eimer steht. Die Antwort ist jeweils
-ein boolean-Wert: istDaEinEimer(), istDaGras()
+Kalb steht. Die Antwort ist jeweils
+ein boolean-Wert: istDaEinKalb(), istDaGras()
 
 ```java
 Position p = new Position(1, 3);
-boolean eimerInfo = acker.istDaEinEimer(p);
+boolean kalbInfo = acker.istDaEinKalb(p);
 ```
 
-## Was können Eimer und Gras?
+## Was können Kälber und Gras?
 
-Der Eimer kann wie das Rindvieh und das Gras über seine Position informieren. Diese
+Das Kalb kann wie das Rindvieh und das Gras über seine Position informieren. Diese
 Position hat eine X- und eine Y-Koordinate: gibPosition().x, gibPosition().y
 
 ```java
@@ -159,5 +159,5 @@ Diese Position lässt sich auch ändern. Hierfür nutzt man die Methode: setzePo
 
 ```java
 Position p = new Position(6, 8);
-eimer.setzePosition(p);
+kalb.setzePosition(p);
 ```

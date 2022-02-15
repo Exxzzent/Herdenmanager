@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Der Acker besteht aus einer Matrix an Feldern, auf denen {@link Eimer}, {@link Gras} und
+ * Der Acker besteht aus einer Matrix an Feldern, auf denen {@link Kalb}, {@link Gras} und
  * Instanzen von {@link Rindvieh} platziert werden können. Der Acker beschränkt die Position
  * dieser Objekte mit seiner Größe.
  * <p>
  * Der Acker kann prüfen, ob einer bestimmten Position Gras wächst {@link #istDaGras} oder
- * ein Eimer steht {@link #istDaEinEimer(Position)}.
+ * ein Kalb steht {@link #istDaEinKalb(Position)}.
  * <p>
- * Wird ein Eimer, Gras oder ein Rindvieh hinzugefügt oder entfernt, informiert der Acker
+ * Wird ein Kalb, Gras oder ein Rindvieh hinzugefügt oder entfernt, informiert der Acker
  * seine Beobachter.
  * <p>
  * Im Muster Model View Controller sind Objekte dieser Klasse Bestandteil des Model. Der Acker
@@ -36,9 +36,9 @@ public class Acker extends BeobachtbaresElement {
      * Der Schlüssel wird als property der Methode {@link #informiereBeobachter(String, Object, Object)}
      * übergeben.
      * <p>
-     * Der Schlüssel dient für Nachrichten zum Property {@link #eimer}.
+     * Der Schlüssel dient für Nachrichten zum Property {@link #kaelber}.
      */
-    public final static String PROPERTY_EIMER = "herdenmanagement.model.Acker.eimer";
+    public final static String PROPERTY_KALB = "herdenmanagement.model.Acker.kaelber";
 
     /**
      * Schlüssel zur Kommunikation mit einem {@link PropertyChangeListener}.
@@ -48,6 +48,15 @@ public class Acker extends BeobachtbaresElement {
      * Der Schlüssel dient für Nachrichten zum Property {@link #graeser}.
      */
     public final static String PROPERTY_GRAESER = "herdenmanagement.model.Acker.graeser";
+
+    /**
+     * Schlüssel zur Kommunikation mit einem {@link PropertyChangeListener}.
+     * Der Schlüssel wird als property der Methode {@link #informiereBeobachter(String, Object, Object)}
+     * übergeben.
+     * <p>
+     * Der Schlüssel dient für Nachrichten zum Property {@link #threading}.
+     */
+    public final static String PROPERTY_THREADING = "herdenmanagement.model.Acker.threading";
 
     /**
      * Objekte der Klasse Rindvieh, die auf dem Acker unterwegs sind
@@ -60,9 +69,9 @@ public class Acker extends BeobachtbaresElement {
     private final List<Gras> graeser;
 
     /**
-     * Objekte der Klasse Eimer, die auf dem Acker stehen
+     * Objekte der Klasse Kalb, die auf dem Acker stehen
      */
-    private final List<Eimer> eimer;
+    private final List<Kalb> kaelber;
 
     /**
      * Anzahl der Zeilen auf dem Acker
@@ -75,7 +84,12 @@ public class Acker extends BeobachtbaresElement {
     private final int spalten;
 
     /**
-     * Erstellt einen neuen Acker und erzeugt die Listen für Gras, Eimer und Rinder.
+     * Anzahl der Spalten auf dem Acker
+     */
+    private Threading threading = Threading.ASYNCHRONOUS_NO_WAIT;
+
+    /**
+     * Erstellt einen neuen Acker und erzeugt die Listen für Gras, Kalb und Rinder.
      *
      * @param zeilen  Anzahl der Zeilen
      * @param spalten Anzahl der Spalten
@@ -85,7 +99,7 @@ public class Acker extends BeobachtbaresElement {
         this.spalten = spalten;
 
         this.graeser = new ArrayList<>();
-        this.eimer = new ArrayList<>();
+        this.kaelber = new ArrayList<>();
         this.viecher = new ArrayList<>();
     }
 
@@ -123,6 +137,27 @@ public class Acker extends BeobachtbaresElement {
     }
 
     /**
+     * Schaltet die Art der Animation um
+     *
+     * @param threading SYNCHRONOUS, ASYNCHRONOUS oder ASYNCHRONOUS_NO_WAIT
+     */
+    public void setzeAnimation(Threading threading) {
+        Threading oldThreading = this.threading;
+        this.threading = threading;
+
+        informiereBeobachter(PROPERTY_THREADING, oldThreading, this.threading);
+    }
+
+    /**
+     * Art der Animation der Änderungen auf dem Acker
+     *
+     * @return SYNCHRONOUS, ASYNCHRONOUS oder ASYNCHRONOUS_NO_WAIT
+     */
+    public Threading gibAnimation() {
+        return this.threading;
+    }
+
+    /**
      * Erzeugt an der Position eine Instanz von {@link Gras}.
      * <p>
      * Wird ein neues Gras auf dem Acker platziert, werden die Observer des Ackers informiert.
@@ -153,46 +188,46 @@ public class Acker extends BeobachtbaresElement {
     }
 
     /**
-     * Stellt einen Eimer auf den Acker. Rinder können hier zukünftig
+     * Stellt einen Kalb auf den Acker. Rinder können hier zukünftig
      * mit {@link Rindvieh#gibMilch()} Milch geben.
      * <p>
-     * Wird ein neuer Eimer auf dem Acker platziert, werden die Observer des Ackers informiert.
+     * Wird ein neues Kalb auf dem Acker platziert, werden die Observer des Ackers informiert.
      *
-     * @param position Position des aufzustellenden Eimers
-     * @return Auf dem Acker platzierter Eimer
+     * @param position Position des aufzustellenden Kalbes
+     * @return Auf dem Acker platziertes Kalb
      */
-    public Eimer stelleEimerAuf(Position position) {
-        Eimer e = new Eimer();
+    public Kalb lassKalbWeiden(Position position) {
+        Kalb e = new Kalb();
         e.setzeAcker(this);
         e.setzePosition(position);
-        eimer.add(e);
+        kaelber.add(e);
 
-        informiereBeobachter(PROPERTY_EIMER, null, e);
+        informiereBeobachter(PROPERTY_KALB, null, e);
 
         return e;
     }
 
     /**
-     * Stellt einen Eimer auf den Acker. Rinder können hier zukünftig
+     * Stellt einen Kalb auf den Acker. Rinder können hier zukünftig
      * mit {@link Rindvieh#gibMilch()} Milch geben.
      * <p>
-     * Wird ein neuer Eimer auf dem Acker platziert, werden die Observer des Ackers informiert.
+     * Wird ein Kalb auf dem Acker platziert, werden die Observer des Ackers informiert.
      *
-     * @param x X-Koordinate des Eimers
-     * @param y Y-Koordinate des Eimers
-     * @return Auf dem Acker platzierter Eimer
+     * @param x X-Koordinate des Kalbs
+     * @param y Y-Koordinate des Kalbs
+     * @return Auf dem Acker platzierters Kalb
      */
     @Deprecated
-    public Eimer stelleEimerAuf(int x, int y) {
-        return stelleEimerAuf(new Position(x, y));
+    public Kalb lassKalbWeiden(int x, int y) {
+        return lassKalbWeiden(new Position(x, y));
     }
 
     /**
      * @param position Zu prüfende Position
-     * @return true, wenn an der Position ein {@link Eimer} steht
+     * @return true, wenn an der Position ein {@link Kalb} steht
      */
-    public boolean istDaEinEimer(Position position) {
-        for (Eimer e : eimer) {
+    public boolean istDaEinKalb(Position position) {
+        for (Kalb e : kaelber) {
             if (e.gibPosition().equals(position)) {
                 return true;
             }
@@ -254,10 +289,10 @@ public class Acker extends BeobachtbaresElement {
     }
 
     /**
-     * @return Liste der Eimer auf dem Acker
+     * @return Liste der Kälber auf dem Acker
      */
-    public List<Eimer> getEimer() {
-        return eimer;
+    public List<Kalb> getKaelber() {
+        return kaelber;
     }
 
     /**

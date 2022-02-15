@@ -6,31 +6,32 @@ import android.graphics.BitmapFactory;
 
 import de.ba.herdenmanagement.R;
 
-import herdenmanagement.model.Eimer;
+import herdenmanagement.model.Kalb;
 
 /**
  * Die Klasse erbt von {@link PositionElementView} und überschreibt die dortige
- * Methode {@link #getAktuellesBild()}, um einen Eimer darzustellen.
+ * Methode {@link #getAktuellesBild()}, um einen Kalb darzustellen.
  *
  * @author Steffen Greiffenberg
  */
-public class EimerView extends PositionElementView {
+public class KalbView extends PositionElementView {
 
     /**
      * Ruft den geerbeten Constructor auf
      *
      * @param context Context der Android App, entspricht i.d.R. der {@link herdenmanagement.MainActivity}
      * @param animator Animation der grafischen Darstellungen
-     * @param eimer Dargestelltes Element
+     * @param kalb Dargestelltes Element
      */
-    public EimerView(Context context, Animator animator, Eimer eimer) {
-        super(context, animator, eimer);
+    public KalbView(Context context, Animator animator, Kalb kalb) {
+        super(context, animator, kalb);
+        setElevation(22);
     }
 
     /**
-     * @return Bild eines Eimers aus den Ressourcen
+     * @return Bild eines Kalbs aus den Ressourcen
      */
     protected Bitmap getAktuellesBild() {
-        return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.eimer);
+        return BitmapFactory.decodeResource(getContext().getResources(), R.drawable.kalb);
     }
 }
