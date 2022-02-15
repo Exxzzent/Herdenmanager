@@ -255,8 +255,11 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
                         (y + 1) * rowHeight - cellSpacing,
                         paint);
 
-                if (acker.istDaGras(new Position(x, y)) || acker.istDaEinKalb(new Position(x, y))) {
-                    continue;
+                if (acker != null) {
+                    Position position = new Position(x, y);
+                    if (acker.istDaGras(position) || acker.istDaEinKalb(position)) {
+                        continue;
+                    }
                 }
 
                 // textgröße berechnen und Text zentriert zeichnen
