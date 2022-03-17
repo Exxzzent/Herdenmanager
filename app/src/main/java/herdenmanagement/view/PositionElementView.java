@@ -41,7 +41,7 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
     /**
      * Animator für die Aktualisierung der GUI
      */
-    private final Animator animator;
+    private Animator animator = null;
 
     /**
      * {@link PositionsElement}, welches hier dargestellt wird. Das {@link PositionsElement}
@@ -52,6 +52,15 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
      * in einem anderen Zustand (an anderer Position o. ä.).
      */
     private PositionsElement positionsElement;
+
+    /**
+     * Erzeugt eine neue Ansicht für einen Acker
+     *
+     * @param context Context der App
+     */
+    public PositionElementView(Context context) {
+        super(context);
+    }
 
     /**
      * Erzeugt die Ansicht für ein PositionsElement.
@@ -178,18 +187,18 @@ public class PositionElementView extends AppCompatImageView implements PropertyC
 
         // Bei Änderungen der Position, muss ein neues Layout berechnet werden
         else if (PositionsElement.PROPERTY_POSITION.equals(evt.getPropertyName())) {
-            // Möglicherweise ist die GUI noch nicht geladen
-            final AckerView ackerView = (AckerView) getParent();
-            if (ackerView == null) {
-                return;
-            }
-
             // Bei Änderungen der Position, muss ein neues Layout berechnet werden
             animator.performAction(new Animator.Action() {
                 @Override
                 public void run() {
                     // Kopie aktualisieren
                     PositionElementView.this.positionsElement = positionsElement;
+
+                    // Möglicherweise ist die GUI noch nicht geladen
+                    final AckerView ackerView = (AckerView) getParent();
+                    if (ackerView == null) {
+                        return;
+                    }
 
                     // remember current LayoutParams
                     final FrameLayout.LayoutParams lp = calculateLayoutParams(
