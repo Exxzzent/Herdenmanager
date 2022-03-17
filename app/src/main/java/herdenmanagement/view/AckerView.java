@@ -39,7 +39,7 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
     /**
      * Versieht die Statusänderung von Objekten mit einer Animation
      */
-    private final Animator animator;
+    private final Animator animator = new Animator();
 
     /**
      * Dargestellter Acker
@@ -71,7 +71,6 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
         initAckerView(null, R.attr.ackerViewStyle);
 
         setWillNotDraw(false);
-        animator = new Animator(context);
     }
 
     /**
@@ -85,7 +84,6 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
         initAckerView(attrs, R.attr.ackerViewStyle);
 
         setWillNotDraw(false);
-        animator = new Animator(context);
     }
 
     /**
@@ -100,7 +98,6 @@ public class AckerView extends FrameLayout implements PropertyChangeListener {
         initAckerView(attrs, defStyleAttr);
 
         setWillNotDraw(false);
-        animator = new Animator(context);
     }
 
     /**

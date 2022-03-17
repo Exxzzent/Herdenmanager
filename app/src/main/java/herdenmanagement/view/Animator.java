@@ -1,7 +1,7 @@
 package herdenmanagement.view;
 
-import android.app.Activity;
-import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 
 import java.util.Queue;
@@ -42,25 +42,9 @@ public class Animator {
     private boolean running = false;
 
     /**
-     * Context der App. Dient der Ermittlung des UI-Thread.
-     */
-    private Activity context;
-
-    /**
      * Liste von Actions, die nacheinander abgearbeitet werden
      */
     private final Queue<Action> actions = new ArrayBlockingQueue<>(1024);
-
-    /**
-     * Erzeugt einen Animator im gegeben Context (= In der Ragel die MainActivity)
-     *
-     * @param context Context der aktuellen App
-     */
-    public Animator(Context context) {
-        if (context instanceof Activity) {
-            this.context = (Activity) context;
-        }
-    }
 
     /**
      * @return SYNCHRONOUS oder ASYNCHRONOUS
@@ -140,7 +124,8 @@ public class Animator {
             actions.add(action);
         } else {
             // perform the action
-            context.runOnUiThread(action);
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(action);
 
             // wait the predefined waiting time
             action.sleep();
@@ -165,7 +150,8 @@ public class Animator {
                         }
 
                         // perform the action
-                        context.runOnUiThread(action);
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(action);
 
                         // wait the predefined waiting time
                         if (threading != Threading.ASYNCHRONOUS_NO_WAIT) {
