@@ -1,4 +1,4 @@
-package herdenmanagement.model;
+package herdenmanagement.model
 
 /**
  * Im Muster Model View Controller sind Objekte dieser Klasse Bestandteil des Model.
@@ -7,6 +7,4 @@ package herdenmanagement.model;
  *
  * @author Steffen Greiffenberg
  */
-public class Kalb extends PositionsElement {
-
-}
+class Kalb : PositionsElement()

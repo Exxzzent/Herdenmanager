@@ -1,4 +1,4 @@
-package herdenmanagement.model;
+package herdenmanagement.model
 
 /**
  * Werden PositionsElemente mit Buttons bewegt, sollte der Animator im Modus
@@ -13,18 +13,18 @@ package herdenmanagement.model;
  *
  * @author Steffen Greiffenberg
  */
-public enum Threading {
+enum class Threading {
     // Direktes Ausführen aller Aktionen im UI-Thread.
     // Bei Ausführung von performAction(Action action)
     // wird der aufrufende Thread WARTEZEIT ms blockiert.
-    SYNCHRONOUS,
-    // Alle Aktionen kommen in eine Warteschlange.
+    SYNCHRONOUS,  // Alle Aktionen kommen in eine Warteschlange.
+
     // Bei Ausführung von performAction(Action action)
     // wird der aufrufende Thread nicht blockiert.
     // Aus der Warteschlange werden die Aktionen nacheinander im UI-Thread ausgeführt.
     // Zwischen den Aktionen wird WARTEZEIT ms gewartet.
-    ASYNCHRONOUS,
-    // Alle Aktionen kommen in eine Warteschlange.
+    ASYNCHRONOUS,  // Alle Aktionen kommen in eine Warteschlange.
+
     // Bei Ausführung von performAction(Action action)
     // wird der aufrufende Thread nicht blockiert.
     // Aus der Warteschlange werden die Aktionen nacheinander im UI-Thread ausgeführt.
