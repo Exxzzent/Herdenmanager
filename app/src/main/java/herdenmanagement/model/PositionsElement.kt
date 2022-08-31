@@ -30,7 +30,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
      * Der Acker besitzt mehrere Spalten und Zeilen. In den entstehenden Zellen wird ein
      * #Positionselement platziert.
      */
-    var acker: Acker? = null
+    lateinit var acker: Acker
 
     /**
      * Position auf dem Acker x = Spalte, y = Zeile

@@ -7,11 +7,9 @@ import de.ba.herdenmanagement.R
  * eine Position auf einem Acker zu besitzen von [PositionsElement]. Zusätzlich kann
  * eine Kuh diese Position aber auch ändern, zum Beispiel mit [.geheVor].
  *
- *
  * Es wird sichergestellt, dass die Kuh nicht über den Rand des Ackers hinaus gehen kann.
  * Ist ein Zielfeld der Bewegung ungültig, speichert die Kuh eine Nachricht mittels
  * [PositionsElement.setzeNachricht].
- *
  *
  * Im Muster Model View Controller (MVC) sind Objekte dieser Klasse Bestandteil des Model.
  * Die beobachtete Kuh bietet einen Mechanismus, um Beobachter
@@ -20,19 +18,18 @@ import de.ba.herdenmanagement.R
  * über Änderungen mittels [PropertyChangeListener.propertyChange]
  * zu informieren.
  *
- *
  * Eigenschaften, die beobachtet werden können sind die Nachrichten des PositionsElements
  * sowie [.richtung], [.status] und [.milchImEuter].
  *
  * @author Steffen Greiffenberg
  */
 open class Rindvieh(
+
     /**
      * Name des Rindviehs. Kühe können nur bei ihrer Erzeugung benannt werden.
      * Ein späteres Umbenennen ist nicht möglich.
      */
-    override val name: String
-) : PositionsElement() {
+    override val name: String) : PositionsElement() {
 
     /**
      * Richtung der Küh. Rindiecher schauen gern nach Norden. Selten nach Süden, manchmal aber
@@ -138,7 +135,7 @@ open class Rindvieh(
      * Die Kuh wird in Blickrichtung (siehe [.richtung]) bewegt. Die Bewegung ist nur
      * möglich, wenn vor der Kuh auf dem [Acker] noch ein Feld existiert.
      */
-    fun geheVor() {
+    open fun geheVor() {
         if (gehtsDaWeiterVor) {
             this.position = positionDavor
         } else {
@@ -208,9 +205,9 @@ open class Rindvieh(
      * Während des Rauchens ist der Status der Kuh [StatusTyp.RAUCHT].
      */
     fun raucheGras() {
-        if (this.acker!!.istDaGras(position)) {
+        if (this.acker.istDaGras(position)) {
             status = StatusTyp.RAUCHT
-            this.acker!!.entferneGras(position)
+            this.acker.entferneGras(position)
             status = StatusTyp.WARTET
         } else {
             zeigeNachricht(R.string.rindvieh_nix_zu_rauchen)
@@ -224,10 +221,10 @@ open class Rindvieh(
      * eine Fehlermeldung mittels [.setzeNachricht].
      */
     fun frissGras() {
-        if (this.acker!!.istDaGras(position)) {
+        if (this.acker.istDaGras(position)) {
             this.status = StatusTyp.FRISST
             milchImEuter = milchImEuter + 1
-            this.acker!!.entferneGras(position)
+            this.acker.entferneGras(position)
             this.status = StatusTyp.WARTET
         } else {
             zeigeNachricht(R.string.rindvieh_kein_gras)
@@ -248,7 +245,7 @@ open class Rindvieh(
      */
     fun gibMilch(): Int {
         var result = milchImEuter
-        if (this.acker!!.istDaEinKalb(position)) {
+        if (this.acker.istDaEinKalb(position)) {
             if (istMilchImEuter) {
                 milchImEuter = 0
             } else {
@@ -278,8 +275,7 @@ open class Rindvieh(
      */
     val gehtsDaWeiterVor: Boolean
         get() {
-            val naechstePosition = positionDavor
-            return this.acker!!.istGueltig(naechstePosition)
+            return this.acker.istGueltig(positionDavor)
         }
 
     /**
@@ -291,7 +287,6 @@ open class Rindvieh(
      */
     val gehtsDaWeiterZurueck: Boolean
         get() {
-            val naechstePosition = positionDahinter
-            return this.acker!!.istGueltig(naechstePosition)
+            return this.acker.istGueltig(positionDahinter)
         }
 }
