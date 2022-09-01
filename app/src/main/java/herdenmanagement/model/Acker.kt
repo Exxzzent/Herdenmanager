@@ -86,10 +86,19 @@ class Acker(
      */
     fun lassRindWeiden(name: String): Rindvieh {
         val rind = Rindvieh(name)
+        lassRindWeiden(rind)
+        return rind
+    }
+
+    /**
+     * Hier wird ein existierendes Rindvieh auf die Weide gestellt.
+     *
+     * @param rind Rind, welches zukünftig hier weidet
+     */
+    fun lassRindWeiden(rind: Rindvieh) {
         rind.acker = this
         viecher.add(rind)
         informiereBeobachter(Keys.PROPERTY_VIECHER, null, rind)
-        return rind
     }
 
     /**
