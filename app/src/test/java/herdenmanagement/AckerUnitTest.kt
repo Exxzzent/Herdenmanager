@@ -24,9 +24,9 @@ class AckerUnitTest {
     @Test
     fun bewegeRind() {
         val acker = Acker(5, 5)
-        val rindvieh = Rindvieh("Rindvieh")
-        Assert.assertEquals("Rindvieh", rindvieh.gibName())
-        acker.lassRindWeiden(rindvieh)
+        val rindvieh = acker.lassRindWeiden("Rindvieh")
+        Assert.assertEquals("Rindvieh", rindvieh.name)
+
         val position = rindvieh.position
         rindvieh.geheVor()
         rindvieh.geheVor()
@@ -35,22 +35,22 @@ class AckerUnitTest {
         Assert.assertEquals((position.x + 2).toLong(), rindvieh.position.x.toLong())
         Assert.assertEquals(position.y.toLong(), rindvieh.position.y.toLong())
         rindvieh.position = Position(0, 0)
-        var zurueck = rindvieh.gehtsDaWeiterZurueck()
+        var zurueck = rindvieh.gehtsDaWeiterZurueck
         Assert.assertFalse(zurueck)
-        var vor = rindvieh.gehtsDaWeiterVor()
+        var vor = rindvieh.gehtsDaWeiterVor
         Assert.assertTrue(vor)
         rindvieh.geheVor()
-        zurueck = rindvieh.gehtsDaWeiterZurueck()
+        zurueck = rindvieh.gehtsDaWeiterZurueck
         Assert.assertTrue(zurueck)
         rindvieh.dreheDichRechtsRum()
         rindvieh.dreheDichRechtsRum()
-        vor = rindvieh.gehtsDaWeiterVor()
+        vor = rindvieh.gehtsDaWeiterVor
         Assert.assertTrue(vor)
         rindvieh.geheVor()
-        vor = rindvieh.gehtsDaWeiterVor()
+        vor = rindvieh.gehtsDaWeiterVor
         Assert.assertFalse(vor)
         rindvieh.geheZurueck()
-        vor = rindvieh.gehtsDaWeiterVor()
+        vor = rindvieh.gehtsDaWeiterVor
         Assert.assertTrue(vor)
     }
 
@@ -71,8 +71,7 @@ class AckerUnitTest {
     @Test
     fun melkeRind() {
         val acker = Acker(5, 5)
-        val rindvieh = Rindvieh("Rindvieh")
-        acker.lassRindWeiden(rindvieh)
+        val rindvieh = acker.lassRindWeiden("Rindvieh")
         acker.lassGrasWachsen(Position(0, 0))
         rindvieh.frissGras()
 
