@@ -8,87 +8,77 @@ Fähigkeiten der Objekte.
 
 Bevor ein Rindvieh Aktionen ausführt, sollte man es erzeugen und auf einen Acker stellen:
 
-```java
-Rindvieh vera = new Rindvieh("Vera");
-acker.lassRindWeiden(vera);
+```kotlin
+val vera = acker.lassRindWeiden("Vera")
 ```
 
 Es kann sich bewegen: 
 
-```java
-vera.geheVor();
-vera.dreheDichLinksRum();
-vera.dreheDichRechtsRum();
-vera.geheZurueck();
+```kotlin
+vera.geheVor()
+vera.dreheDichLinksRum()
+vera.dreheDichRechtsRum()
 ```
 
 Es kann Gras fressen oder rauchen:
 
-```java
-vera.frissGras();
-vera.raucheGras();
+```kotlin
+vera.frissGras()
+vera.raucheGras()
 ```
         
 Es kann, bevor man es in eine Richtung schickt, Fragen zu dieser mit boolean-Werten beantworten: 
 
-```java
-boolean gehtsDaWeiter = vera.gehtsDaWeiterVor();
-gehtsDaWeiter = vera.gehtsDaWeiterZurueck();
+```kotlin
+var gehtsDaWeiter = vera.gehtsDaWeiterVor
+gehtsDaWeiter = vera.gehtsDaWeiterZurueck
 ```
 
 Ein Rindvieh kann eventuell Milch geben. Wenn das möglich ist, tut es dies auch gern:
 
-```java
-if (vera.istMilchImEuter()) {
-    int milchMenge = vera.gibMilch();
+```kotlin
+if (vera.istMilchImEuter) {
+    vera.gibMilch()
 }
-```
-
-Nach dem Fressen produziert das Rindvieh Milch. Wieviel im Euter ist,
-kann man abfragen:
-
-```java
-vera.frissGras();
-int milchImEuter = vera.messeMilchImEuter();
 ```
 
 Es kann die Frage nach seinem Namen mit einem String
 beantworten:
 
-```java
-String name = vera.gibName();
+```kotlin
+val name = vera.name
 ```
 
 Es kann über seinen aktuellen Status (WARTET, FRISST, RAUCHT)
 informieren:
 
-```java
-Rindvieh.StatusTyp status = vera.gibStatus();
+```kotlin
+val status = vera.status
 ```
 
 Es kann über seine Blickrichtung (NORD, OST, SUED, WEST)
 informieren:
 
-```java
-Rindvieh.RichtungsTyp status = vera.gibRichtung();
+```kotlin
+val richtung = vera.richtung
 ```
 
 Es kann über seine Position auf dem Acker informieren. Diese
 Position ist selbst ein Objekt, das eine X- und Y-Koordinate besitzt:
 
-```java
-Position p = vera.gibPosition();
-int xKoordinate = p.x;
+```kotlin
+val position = vera.position
+val xKoordinate = position.x
 ```
 
 ## Was kann der Acker?
 
-Bevor man einen Acker benutzen kann, sollte man ihn erzeugen und mit einem 
-Herdenmanager verknüpfen:
+Jeder MainActivity des HerdenManagers ist bereits ein Acker zugeordnet.
 
-```java
-Acker acker = new Acker(7,7);
-herdenManager.setzeAcker(acker);
+```kotlin
+fun manageHerde(mainActivity: MainActivity) {
+    val acker = mainActivity.acker
+}
 ```
 
 Der Acker kann Rinder weiden lassen. Ist der Acker selbst bereits sichtbar
@@ -96,68 +86,65 @@ auf dem Smartphone, werden diese Rinder auch sofort sichtbar. Das Rindvieh
 muss hierfür bereits existieren und wird der Methode
 übergeben: 
 
-```java
-Rindvieh eumel = new Rindvieh("Eumel");
-acker.lassRindWeiden(eumel);
+```kotlin
+val eumel = acker.lassRindWeiden("Eumel")
 ```
 
 Der Acker kann Kälber und Gräser an einer bestimmten Position erzeugen und
-sichtbar machen. Kalb und Gras werden mit der Aktion erstellt und müssen
-nicht wie das Rindvieh bei lassRindWieden(...) vorher existieren.
+sichtbar machen. Kalb und Gras werden mit jeweils einer Aktion erstellt.
 Die Methode benötigt die Position für das Kalb bzw. das Gras als
 Parameter:
 
-```java
-Position p = new Position(3, 2);
-Kalb k = acker.lassKalbWeiden(p);
+```kotlin
+val position = Position(2, 2)
+acker.lassKalbWeiden(position)
 ```
 
 Der Acker kann über die bereits dargestellten Rinder, Kälber und Gräser
 informieren. Die Methoden liefern entsprechende
 Listen: getKaelber(), getGraeser(), getViecher()
 
-```java
-List<Kalb> kaelberListe = acker.getKaelber();
+```kotlin
+val kaelber = acker.kaelber
 ```
 
 Wächst an einer Position Gras, kann es entfernt werden: 
 
-```java
-Position p = new Position(14, 1);
-boolean grasEntfernt = acker.entferneGras(p);
+```kotlin
+val position = Position(1, 2)
+acker.entferneGras(position)
 ```
 
 Da der Acker eine bestimmte Größe hat, sind einige Positionen ungültig.
 Die Frage, ob eine Position gültig ist, kann der Acker mit einem
 boolean-Wert beantworten:
 
-```java
-Position p = new Position(10, 23);
-boolean gueltig = acker.istPositionGueltig(p);
+```kotlin
+val position = Position(5, 5)
+val gueltig = acker.istGueltig(position)
 ```
 
 Der Acker kann prüfen, ob derzeit an einer Position Gras wächst oder ein
-Kalb steht. Die Antwort ist jeweils
-ein boolean-Wert: istDaEinKalb(), istDaGras()
+Kalb steht. Die Antwort ist jeweils ein boolean-Wert:
 
-```java
-Position p = new Position(1, 3);
-boolean kalbInfo = acker.istDaEinKalb(p);
+```kotlin
+val position = Position(1, 3)
+acker.istDaEinKalb(position)
 ```
 
 ## Was können Kälber und Gras?
 
 Das Kalb kann wie das Rindvieh und das Gras über seine Position informieren. Diese
-Position hat eine X- und eine Y-Koordinate: gibPosition().x, gibPosition().y
+Position hat eine X- und eine Y-Koordinate: 
 
-```java
-Position p = gras.gibPosition();
-int yKoordinate = p.y;
+```kotlin
+val position = gras.position
+val yKoordinate = position.y
 ```
 
-Diese Position lässt sich auch ändern. Hierfür nutzt man die Methode: setzePosition(...)
+Diese Position lässt sich auch ändern:
 
-```java
-Position p = new Position(6, 8);
-kalb.setzePosition(p);
+```kotlin
+val kalb = acker.lassKalbWeiden(Position(3, 1))
+kalb.position = Position(2, 3)
 ```
