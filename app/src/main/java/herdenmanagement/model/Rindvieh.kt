@@ -23,7 +23,7 @@ import de.ba.herdenmanagement.R
  * @author Steffen Greiffenberg
  *
  * @constructor Erzeugt ein Rindvieh
- * @param name des Rindviehs. Kühe können nur bei ihrer Erzeugung benannt werden. Ein späteres Umbenennen ist nicht möglich.
+ * @param name Name des Rindviehs. Kühe können nur bei ihrer Erzeugung benannt werden. Ein späteres Umbenennen ist nicht möglich.
  */
 open class Rindvieh(override val name: String) : PositionsElement() {
 
