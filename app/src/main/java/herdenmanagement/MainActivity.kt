@@ -6,7 +6,6 @@ import de.ba.herdenmanagement.R
 import herdenmanagement.view.AckerView
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Looper
 import android.widget.Toast
 import herdenmanagement.model.Acker
 
@@ -104,7 +103,7 @@ class MainActivity : AppCompatActivity() {
      * Show a simple message
      */
     fun toast(message: Any) {
-        runOnUiThread({ Toast.makeText(this, "" + message, Toast.LENGTH_LONG).show() })
+        runOnUiThread { Toast.makeText(this, "$message", Toast.LENGTH_LONG).show() }
     }
 
     /**
