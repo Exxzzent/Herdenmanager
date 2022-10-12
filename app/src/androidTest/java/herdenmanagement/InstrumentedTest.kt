@@ -3,8 +3,6 @@ package herdenmanagement
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import herdenmanagement.view.AckerView
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.core.app.ActivityScenario.ActivityAction
-import android.app.Activity
 import android.view.View
 import de.ba.herdenmanagement.R
 import herdenmanagement.model.Rindvieh
@@ -21,34 +19,38 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4ClassRunner::class)
 class InstrumentedTest {
+
     private var ackerView: AckerView? = null
 
-    @Rule
-    var rule: ActivityScenarioRule<*> = ActivityScenarioRule(MainActivity::class.java)
+    @get:Rule
+    public val rule: ActivityScenarioRule<*> = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
     fun setupAcker() {
-        // launch the app
-        rule.scenario.onActivity(ActivityAction { activity: Activity ->
+        val scenario = rule.getScenario()
+        scenario.onActivity {
             // create an a view
-            ackerView = activity.findViewById(R.id.acker_view)
+            ackerView = it.findViewById(R.id.acker_view)
 
             Assert.assertNotNull(ackerView)
-            Assert.assertEquals(ackerView!!.acker!!.kaelber.size.toLong(), 0)
-            Assert.assertEquals(ackerView!!.acker!!.viecher.size.toLong(), 0)
+            Assert.assertEquals(ackerView!!.acker.kaelber.size.toLong(), 0)
+            Assert.assertEquals(ackerView!!.acker.viecher.size.toLong(), 0)
 
-            val rindvieh = Rindvieh("Vera")
+            var rindvieh: Rindvieh? = null
+
             ackerView!!.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
                 override fun onChildViewAdded(parent: View, child: View) {
-                    Assert.assertEquals(child.id.toLong(), rindvieh.id.toLong())
+                    Assert.assertEquals(child.id.toLong(), rindvieh?.id?.toLong())
                 }
 
                 override fun onChildViewRemoved(parent: View, child: View) {}
             })
 
-            ackerView!!.acker!!.lassRindWeiden(rindvieh)
+            rindvieh = ackerView!!.acker.lassRindWeiden("Vera")
+        }
 
-        } as Nothing)
+        // launch the app
+        // rule.scenario.onActivity(ActivityAction { activity: Activity ->
     }
 
     /* @Test
