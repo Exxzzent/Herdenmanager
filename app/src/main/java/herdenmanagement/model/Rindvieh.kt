@@ -8,13 +8,12 @@ import de.ba.herdenmanagement.R
  * eine Kuh diese Position aber auch ändern, zum Beispiel mit [geheVor].
  *
  * Es wird sichergestellt, dass die Kuh nicht über den Rand des Ackers hinaus gehen kann.
- * Ist ein Zielfeld der Bewegung ungültig, speichert die Kuh eine Nachricht mittels
- * [PositionsElement.setzeNachricht].
+ * Ist ein Zielfeld der Bewegung ungültig, zeigt die Kuh eine Nachricht mittels
+ * [PositionsElement.zeigeNachricht].
  *
  * Im Muster Model View Controller (MVC) sind Objekte dieser Klasse Bestandteil des Model.
  * Die beobachtete Kuh bietet einen Mechanismus, um Beobachter
- * mit [fuegeBeobachterHinzu]
- * an- und mit [entferneBeobachter] abzumelden und diese
+ * mit [fuegeBeobachterHinzu] an- und mit [entferneBeobachter] abzumelden und diese
  * über Änderungen mittels [BeobachtbaresElement.informiereBeobachter]
  * zu informieren.
  *

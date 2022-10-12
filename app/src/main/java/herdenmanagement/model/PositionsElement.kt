@@ -79,7 +79,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
      *
      * @param nachricht Letzte Nachricht (Fehler- oder Vollzugsmeldung)
      */
-    fun setzeNachricht(nachricht: String) {
+    fun zeigeNachricht(nachricht: String) {
         val oldElement = clone()
         this.nachricht = nachricht
         val newElement = clone()
