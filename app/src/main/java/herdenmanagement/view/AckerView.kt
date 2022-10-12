@@ -323,10 +323,16 @@ class AckerView : FrameLayout, PropertyChangeListener {
     private fun aktualisiereGraeser(oldValue: Gras?, newValue: Gras?) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this)
-            addViewAmimated(GrasView(context, animator, newValue))
+            val v = GrasView(context, animator, newValue)
+            newValue.fuegeBeobachterHinzu(v)
+            addViewAmimated(v)
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this)
-            removeViewAnimated(oldValue.id)
+            val v = findViewById<View>(oldValue.id)
+            if (v is GrasView) {
+                oldValue.entferneBeobachter(v)
+                removeViewAnimated(v)
+            }
         }
     }
 
@@ -342,10 +348,16 @@ class AckerView : FrameLayout, PropertyChangeListener {
     private fun aktualisiereVieh(oldValue: Rindvieh?, newValue: Rindvieh?) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this)
-            addViewAmimated(RindviehView(context, animator, newValue))
+            val v = RindviehView(context, animator, newValue)
+            newValue.fuegeBeobachterHinzu(v)
+            addViewAmimated(v)
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this)
-            removeViewAnimated(oldValue.id)
+            val v = findViewById<View>(oldValue.id)
+            if (v is RindviehView) {
+                oldValue.entferneBeobachter(v)
+                removeViewAnimated(v)
+            }
         }
     }
 
@@ -361,28 +373,31 @@ class AckerView : FrameLayout, PropertyChangeListener {
     private fun aktualisiereKalb(oldValue: Kalb?, newValue: Kalb?) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this)
-            addViewAmimated(KalbView(context, animator, newValue))
+            val v = KalbView(context, animator, newValue)
+            newValue.fuegeBeobachterHinzu(v)
+            addViewAmimated(v)
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this)
-            removeViewAnimated(oldValue.id)
+            val v = findViewById<View>(oldValue.id)
+            if (v is KalbView) {
+                oldValue.entferneBeobachter(v)
+                removeViewAnimated(v)
+            }
         }
     }
 
     /**
-     * @param id Ressourcen-ID der zu entfernenden View
+     * @param view zu entfernende View
      */
-    private fun removeViewAnimated(id: Int) {
+    private fun removeViewAnimated(view: View) {
         animator.performAction(object : Animator.Action() {
             override fun run() {
-                // View für die Animation ermitteln
-                val v = findViewById<View>(id) ?: return
-
                 // Ausblenden -> Alpha = 0
                 TransitionManager.beginDelayedTransition(this@AckerView)
-                v.alpha = 0f
+                view.alpha = 0f
 
                 // Ausgeblendete View entfernen
-                removeView(v)
+                removeView(view)
 
                 // layout anpassen?
                 requestLayout()

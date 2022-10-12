@@ -36,25 +36,36 @@ open class PositionElementView : AppCompatImageView, PropertyChangeListener {
     ) : super(context) {
         this.animator = animator
         this.positionsElement = positionsElement.copy()
-        positionsElement.fuegeBeobachterHinzu(this)
 
         // ID des PositionsElement übernehmen
         id = positionsElement.id
 
-        // Bild setzen
-        setImageBitmap(aktuellesBild)
+        // leeres Mini-Bild setzen
+        setImageBitmap(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8))
     }
 
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
     constructor(context: Context) : super(context) {
         animator = Animator()
         positionsElement = PositionsElement()
     }
 
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         animator = Animator()
         positionsElement = PositionsElement()
     }
 
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
     constructor(context: Context, attrs: AttributeSet, style: Int) : super(context, attrs, style) {
         animator = Animator()
         positionsElement = PositionsElement()
@@ -96,8 +107,8 @@ open class PositionElementView : AppCompatImageView, PropertyChangeListener {
      *
      * @param bild darzustellendes Bild
      */
-    override final fun setImageBitmap(bild: Bitmap) {
-        if (elevation == 0f || bild.width == 0) {
+    final override fun setImageBitmap(bild: Bitmap) {
+        if ((elevation == 0f) || (bild.width == 0)) {
             super.setImageBitmap(bild)
             return
         }
@@ -217,10 +228,8 @@ open class PositionElementView : AppCompatImageView, PropertyChangeListener {
     fun calculateLayoutParams(width: Float, height: Float): FrameLayout.LayoutParams {
         val acker = positionsElement.acker
         val position = positionsElement.position
-        val columns = acker?.spalten ?: 0
-        val columnWidth: Float = (width / columns.toFloat())
-        val rows = acker?.zeilen ?: 0
-        val rowHeight: Float = (height / rows.toFloat())
+        val columnWidth: Float = width / acker.spalten.toFloat()
+        val rowHeight: Float = height / acker.zeilen.toFloat()
 
         // LayoutParams for child
         val lp = layoutParams as FrameLayout.LayoutParams
