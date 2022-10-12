@@ -7,6 +7,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import herdenmanagement.model.PositionsElement
 import android.content.res.Resources.NotFoundException
 import android.graphics.*
+import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.Toast
 import herdenmanagement.model.Keys
@@ -16,23 +17,48 @@ import java.beans.PropertyChangeListener
 /**
  * Basisklasse für die Darstellung von Kälbern, Kühen, etc. Diese View kann auf Änderungen
  * an den Properties ihres PositionsElements reagieren, in der Regel durch Anpassung der Anzeige.
- * Wird die Eigenschaft elevation mit [.setElevation] angepasst, werfen
+ * Wird die Eigenschaft elevation mit [setElevation] angepasst, werfen
  * Objekte dieser Klasse einen Schatten auf den Acker.
  *
- *
  * Im Muster Model View Controller (MVC) sind Objekte dieser Klasse Bestandteil der View.
- *
  *
  * Im Muster Obersever ist die Klasse ein ConcreteObserver, der PropertyChangeListener
  * ist das implementierte Observer Interface.
  *
  * @author Steffen Greiffenberg
  */
-open class PositionElementView(
-    context: Context,
-    animator: Animator,
-    positionsElement: PositionsElement
-) : AppCompatImageView(context), PropertyChangeListener {
+open class PositionElementView : AppCompatImageView, PropertyChangeListener {
+
+    constructor(
+        context: Context,
+        animator: Animator,
+        positionsElement: PositionsElement
+    ) : super(context) {
+        this.animator = animator
+        this.positionsElement = positionsElement.copy()
+        positionsElement.fuegeBeobachterHinzu(this)
+
+        // ID des PositionsElement übernehmen
+        id = positionsElement.id
+
+        // Bild setzen
+        setImageBitmap(aktuellesBild)
+    }
+
+    constructor(context: Context) : super(context) {
+        animator = Animator()
+        positionsElement = PositionsElement()
+    }
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        animator = Animator()
+        positionsElement = PositionsElement()
+    }
+
+    constructor(context: Context, attrs: AttributeSet, style: Int) : super(context, attrs, style) {
+        animator = Animator()
+        positionsElement = PositionsElement()
+    }
 
     /**
      * Animator für die Aktualisierung der GUI
@@ -49,18 +75,6 @@ open class PositionElementView(
      */
     var positionsElement: PositionsElement
         private set
-
-    init {
-        this.animator = animator
-        this.positionsElement = positionsElement.copy()
-        positionsElement.fuegeBeobachterHinzu(this)
-
-        // ID des PositionsElement übernehmen
-        id = positionsElement.id
-
-        // Bild setzen
-        setImageBitmap(aktuellesBild)
-    }
 
     /**
      * Bei Änderung der Höhe des Elements muss der Schatten des
@@ -236,7 +250,7 @@ open class PositionElementView(
      * Diese Methode sollte von allen erbenden Klassen überladen werden, um entsprechend des
      * PositionsElements ein passendes Bild zu liefern.
      *
-     * @return Bild auf Basis des [PositionsElement]
+     * Bild auf Basis des [PositionsElement]
      */
     protected open val aktuellesBild: Bitmap
         get() = Bitmap.createBitmap(0, 0, Bitmap.Config.ALPHA_8)

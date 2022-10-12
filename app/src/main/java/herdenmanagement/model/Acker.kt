@@ -7,8 +7,8 @@ import java.util.ArrayList
  * Instanzen von [Rindvieh] platziert werden können. Der Acker beschränkt die Position
  * dieser Objekte mit seiner Größe.
  *
- * Der Acker kann prüfen, ob einer bestimmten Position Gras wächst [.istDaGras] oder
- * ein Kalb steht [.istDaEinKalb].
+ * Der Acker kann prüfen, ob einer bestimmten Position Gras wächst [istDaGras] oder
+ * ein Kalb steht [istDaEinKalb].
  *
  * Wird ein Kalb, Gras oder ein Rindvieh hinzugefügt oder entfernt, informiert der Acker
  * seine Beobachter.
@@ -17,15 +17,13 @@ import java.util.ArrayList
  * kann mit einer [herdenmanagement.view.AckerView] dargestellt werden.
  *
  * @author Steffen Greiffenberg
+ *
+ * @constructor Erzeugt einen Acker
+ * @property spalten Anzahl der Spalten auf dem Acker
+ * @property zeilen Anzahl der Zeilen auf dem Acker
  */
 class Acker(
-    /**
-     * Anzahl der Spalten auf dem Acker
-     */
     var spalten: Int,
-    /**
-     * Anzahl der Zeilen auf dem Acker
-     */
     var zeilen: Int
 ) : BeobachtbaresElement() {
 
@@ -46,10 +44,11 @@ class Acker(
 
     /**
      * Schaltet die Art der Animation um. Art der Animation der Änderungen auf dem Acker.
-     *
-     * @param threading SYNCHRONOUS, ASYNCHRONOUS oder ASYNCHRONOUS_NO_WAIT
      */
     var animation: Threading = Threading.ASYNCHRONOUS_NO_WAIT
+        /**
+         * @param value SYNCHRONOUS, ASYNCHRONOUS oder ASYNCHRONOUS_NO_WAIT
+         */
         set (value) {
             val oldThreading = field
             field = value
@@ -116,7 +115,7 @@ class Acker(
      * @return true, wenn an der Position ein [Kalb] steht
      */
     fun istDaEinKalb(position: Position): Boolean {
-        return kaelber.find { it.position.equals(position) } != null
+        return kaelber.find { it.position == position } != null
     }
 
     /**
@@ -124,7 +123,7 @@ class Acker(
      * @return true, wenn an der Position ein [Gras] wächst
      */
     fun istDaGras(position: Position): Boolean {
-        return graeser.find { it.position.equals(position) } != null
+        return graeser.find { it.position == position } != null
     }
 
     /**
@@ -136,7 +135,7 @@ class Acker(
      */
     fun entferneGras(position: Position): Boolean {
         for (gras in graeser) {
-            if (gras.position.equals(position)) {
+            if (gras.position == position) {
                 graeser.remove(gras)
                 informiereBeobachter(Keys.PROPERTY_GRAESER, gras, null)
                 return true

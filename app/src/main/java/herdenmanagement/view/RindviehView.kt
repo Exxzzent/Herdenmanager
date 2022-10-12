@@ -7,20 +7,49 @@ import herdenmanagement.model.Rindvieh
 import herdenmanagement.model.Rindvieh.StatusTyp
 import herdenmanagement.model.Rindvieh.RichtungsTyp
 import android.graphics.*
+import android.util.AttributeSet
+import herdenmanagement.model.PositionsElement
 
 /**
  * Die Klasse erbt von [PositionElementView] und überschreibt die dortige
- * Methode [.getAktuellesBild], um ein Rindvieh darzustellen. Da das Rind in
+ * Methode [aktuellesBild], um ein Rindvieh darzustellen. Da das Rind in
  * verschiedene Richtungen schauen kann, ist die Klasse komplizierter aufgebaut
  * als zum Beispiel die [KalbView].
  *
  * @author Steffen Greiffenberg
  */
-class RindviehView(context: Context, animator: Animator, rindvieh: Rindvieh) :
-    PositionElementView(context, animator, rindvieh) {
+class RindviehView : PositionElementView {
 
     /**
-     * @return Bild einer Kuh, die in die richtige Richtung schaut
+     * Geerbter Constructor der Klasse [PositionElementView]
+     * @constructor
+     */
+    constructor(
+        context: Context,
+        animator: Animator,
+        positionsElement: PositionsElement
+    ) : super(context, animator, positionsElement)
+
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
+    constructor(context: Context) : super(context)
+
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
+    constructor(context: Context, attrs: AttributeSet, style: Int) : super(context, attrs, style)
+
+    /**
+     * Bild einer Kuh, die in die richtige Richtung schaut
      */
     override val aktuellesBild: Bitmap
         get() {
@@ -30,21 +59,24 @@ class RindviehView(context: Context, animator: Animator, rindvieh: Rindvieh) :
                 return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_rauch)
             }
 
-            if (this.rindvieh.richtung == RichtungsTyp.NORD) {
-                return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_hinten)
-            } else if (this.rindvieh.richtung == RichtungsTyp.WEST) {
-                return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_links)
-            } else if (this.rindvieh.richtung == RichtungsTyp.SUED) {
-                return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_vorn)
-            } else if (this.rindvieh.richtung == RichtungsTyp.OST) {
-                return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_rechts)
+            return when (this.rindvieh.richtung) {
+                RichtungsTyp.NORD -> {
+                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_hinten)
+                }
+                RichtungsTyp.WEST -> {
+                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_links)
+                }
+                RichtungsTyp.SUED -> {
+                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_vorn)
+                }
+                RichtungsTyp.OST -> {
+                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_rechts)
+                }
             }
-
-            return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_vorn)
         }
 
     /**
-     * @return Von dieser Klasse dargestelltes [Rindvieh]
+     * Von dieser Klasse dargestelltes [Rindvieh]
      */
     val rindvieh: Rindvieh
         get() = positionsElement as Rindvieh
@@ -52,12 +84,12 @@ class RindviehView(context: Context, animator: Animator, rindvieh: Rindvieh) :
     /**
      * Reuse the text bounds in onDraw
      */
-    private val TEXT_BOUNDS = Rect()
+    private val textBounds = Rect()
 
     /**
      * Reuse the text paint in onDraw
      */
-    private val TEXT_PAINT = TextPaint()
+    private val textPaint = TextPaint()
 
     /**
      * Draw the name of the current rind centered on the bottom of the current view
@@ -69,7 +101,7 @@ class RindviehView(context: Context, animator: Animator, rindvieh: Rindvieh) :
 
         // test if there is a name to draw
         val name = rindvieh.name
-        if (name.length == 0) {
+        if (name.isEmpty()) {
             return
         }
 
@@ -80,11 +112,11 @@ class RindviehView(context: Context, animator: Animator, rindvieh: Rindvieh) :
         val testTextSize = 48f
 
         // Get the bounds of the text, using our testTextSize.
-        TEXT_PAINT.textSize = testTextSize
-        TEXT_PAINT.getTextBounds(name, 0, name.length, TEXT_BOUNDS)
+        textPaint.textSize = testTextSize
+        textPaint.getTextBounds(name, 0, name.length, textBounds)
 
         // Calculate the desired size as a proportion of our testTextSize.
-        var desiredTextSize = testTextSize * (width - 20) / TEXT_BOUNDS.width()
+        var desiredTextSize = testTextSize * (width - 20) / textBounds.width()
 
         // don't use font sizes larger than 40
         if (desiredTextSize > 40) {
@@ -92,17 +124,17 @@ class RindviehView(context: Context, animator: Animator, rindvieh: Rindvieh) :
         }
 
         // Set the paint for that size.
-        TEXT_PAINT.textSize = desiredTextSize
+        textPaint.textSize = desiredTextSize
 
         // get the text bounds with real font size
-        TEXT_PAINT.getTextBounds(name, 0, name.length, TEXT_BOUNDS)
+        textPaint.getTextBounds(name, 0, name.length, textBounds)
 
         // draw the name on bottom center
         canvas.drawText(
             rindvieh.name,
-            width / 2f - TEXT_BOUNDS.centerX(),
-            (height - TEXT_BOUNDS.height() + 10).toFloat(),
-            TEXT_PAINT
+            width / 2f - textBounds.centerX(),
+            (height - textBounds.height() + 10).toFloat(),
+            textPaint
         )
     }
 
@@ -112,9 +144,9 @@ class RindviehView(context: Context, animator: Animator, rindvieh: Rindvieh) :
     init {
         elevation = 25f
 
-        TEXT_PAINT.textSize = 40f
-        TEXT_PAINT.isAntiAlias = true
-        TEXT_PAINT.color = Color.BLACK
-        TEXT_PAINT.setShadowLayer(5.0f, 1.0f, 1.0f, Color.WHITE)
+        textPaint.textSize = 40f
+        textPaint.isAntiAlias = true
+        textPaint.color = Color.BLACK
+        textPaint.setShadowLayer(5.0f, 1.0f, 1.0f, Color.WHITE)
     }
 }

@@ -42,7 +42,7 @@ open class BeobachtbaresElement {
     /**
      * Informiert alle Elemente in #listeners
      *
-     * @param property Konstante, wie [PositionsElement.PROPERTY_NACHRICHT] oder [PositionsElement.PROPERTY_POSITION]
+     * @param property Konstante, wie [Keys.PROPERTY_NACHRICHT] oder [PositionsElement.PROPERTY_POSITION]
      * @param oldValue Alter Wert
      * @param newValue Neuer Wert
      */

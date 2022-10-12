@@ -11,16 +11,16 @@ import android.view.View
 import herdenmanagement.model.*
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
+import kotlin.math.max
 
 /**
  * Basisklasse für die Darstellung von Bundesländern wie Macklemburg-Vorpommern.
- *
  *
  * Die AckerView ist Observer des Ackers. Werden auf letzterem Kälber, Gräser und Lebewesen
  * (insbesondere Kühe) eingefügt, informiert der Acker Objekte dieser Klasse AckerView über
  * die Änderungen. Es ist Aufgabe der AckerView für die neuen Elemente korrespondierend eine
  * [KalbView], [GrasView] oder [RindviehView] zu erzeugen und als Child-Element
- * (siehe [.addView]) anzuzeigen.
+ * (siehe [addViewAmimated]) anzuzeigen.
  *
  * @author Steffen Greiffenberg
  */
@@ -78,12 +78,12 @@ class AckerView : FrameLayout, PropertyChangeListener {
         }
 
     /**
-     * Paint to draw a text. Reused in [.onDraw]
+     * Paint to draw a text. Reused in [onDraw]
      */
     private val textPaint = TextPaint()
 
     /**
-     * Paint to draw lines. Reused in [.onDraw]
+     * Paint to draw lines. Reused in [onDraw]
      */
     private val paint = Paint()
 
@@ -166,10 +166,9 @@ class AckerView : FrameLayout, PropertyChangeListener {
 
     /**
      * Measure the view and its content to determine the measured width and the
-     * measured height. This method is invoked by [.measure] and
+     * measured height. This method is invoked by [measure] and
      * should be overriden by subclasses to provide accurate and efficient
      * measurement of their contents.
-     *
      *
      * @param widthMeasureSpec  horizontal space requirements as imposed by the parent.
      * The requirements are encoded with
@@ -180,10 +179,10 @@ class AckerView : FrameLayout, PropertyChangeListener {
      */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // get the width from widthMeasureSpec
-        val width = Math.max(MeasureSpec.getSize(widthMeasureSpec), 0).toFloat()
+        val width = max(MeasureSpec.getSize(widthMeasureSpec), 0).toFloat()
 
         // get the height from widthMeasureSpec
-        val height = Math.max(MeasureSpec.getSize(heightMeasureSpec), 0).toFloat()
+        val height = max(MeasureSpec.getSize(heightMeasureSpec), 0).toFloat()
 
         // set LayoutParams for all childs
         var i = 0
@@ -212,7 +211,7 @@ class AckerView : FrameLayout, PropertyChangeListener {
     /**
      * Cache zur Berechnung des Textbereichs
      */
-    private val TEXT_RECT = Rect()
+    private val textRect = Rect()
 
     /**
      * Während onDraw() sollten keine Objekte erzeugt werden. Deshalb wird
@@ -253,11 +252,11 @@ class AckerView : FrameLayout, PropertyChangeListener {
 
                 // textgröße berechnen und Text zentriert zeichnen
                 val text = "$x:$y"
-                textPaint.getTextBounds(text, 0, text.length, TEXT_RECT)
+                textPaint.getTextBounds(text, 0, text.length, textRect)
                 canvas.drawText(
                     text,
-                    (x + 0.5f) * columnWidth - TEXT_RECT.width() / 2.0f,
-                    (y + 0.5f) * rowHeight + TEXT_RECT.height() / 2.0f,
+                    (x + 0.5f) * columnWidth - textRect.width() / 2.0f,
+                    (y + 0.5f) * rowHeight + textRect.height() / 2.0f,
                     textPaint
                 )
             }
@@ -268,7 +267,6 @@ class AckerView : FrameLayout, PropertyChangeListener {
     /**
      * Called from layout when this view should
      * assign a size and position to each of its children.
-     *
      *
      * Derived classes with children should override
      * this method and call layout on each of
@@ -296,7 +294,7 @@ class AckerView : FrameLayout, PropertyChangeListener {
     /**
      * Legt die GUI Elemente an, wenn Kalb, Gräser etc. angelegt wurden
      *
-     * @param evt Interessant sind z.B. die Nachrichten mit den Property-Name Acker.PROPERTY_KALB
+     * @param evt Interessant sind z. B. die Nachrichten mit den Property-Name Acker.PROPERTY_KALB
      */
     override fun propertyChange(evt: PropertyChangeEvent) {
         if (Keys.PROPERTY_KALB == evt.propertyName) {
@@ -376,16 +374,14 @@ class AckerView : FrameLayout, PropertyChangeListener {
     private fun removeViewAnimated(id: Int) {
         animator.performAction(object : Animator.Action() {
             override fun run() {
-                // fade out the view
+                // View für die Animation ermitteln
                 val v = findViewById<View>(id) ?: return
 
-                // avoid NPE
-
-                // fade out
+                // Ausblenden -> Alpha = 0
                 TransitionManager.beginDelayedTransition(this@AckerView)
                 v.alpha = 0f
 
-                // remove the view
+                // Ausgeblendete View entfernen
                 removeView(v)
 
                 // layout anpassen?
@@ -403,10 +399,12 @@ class AckerView : FrameLayout, PropertyChangeListener {
     private fun addViewAmimated(view: View) {
         animator.performAction(object : Animator.Action() {
             override fun run() {
-                // langsam einblenden
+                // langsam einblenden: Alpha = 1
                 view.alpha = 0f
                 TransitionManager.beginDelayedTransition(this@AckerView)
                 view.alpha = 1f
+
+                // View hinzufügen
                 addView(view)
 
                 // layout anpassen?
