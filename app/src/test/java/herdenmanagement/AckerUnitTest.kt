@@ -2,7 +2,6 @@ package herdenmanagement
 
 import herdenmanagement.model.Acker
 import herdenmanagement.model.Position
-import herdenmanagement.model.Rindvieh
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before

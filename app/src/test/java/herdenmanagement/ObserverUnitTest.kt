@@ -3,7 +3,6 @@ package herdenmanagement
 import herdenmanagement.model.*
 import herdenmanagement.model.Rindvieh.RichtungsTyp
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
@@ -26,7 +25,7 @@ class ObserverUnitTest {
         Assert.assertEquals(Keys.PROPERTY_KALB, evt!!.propertyName)
         Assert.assertTrue(evt!!.newValue is Kalb)
 
-        val rindvieh = acker.lassRindWeiden("Rindvieh")
+        acker.lassRindWeiden("Rindvieh")
         Assert.assertEquals(Keys.PROPERTY_VIECHER, evt!!.propertyName)
         Assert.assertTrue(evt!!.newValue is Rindvieh)
     }
