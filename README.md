@@ -6,7 +6,7 @@ Fähigkeiten der Objekte.
 
 ## Was kann ein Rindvieh?
 
-Bevor ein Rindvieh Aktionen ausführt, sollte man es erzeugen und auf einen Acker stellen:
+Bevor ein Rindvieh Aktionen ausführt, sollte man es erzeugen und auf einen Acker stellen.
 
 ```kotlin
 val vera = acker.lassRindWeiden("Vera")
