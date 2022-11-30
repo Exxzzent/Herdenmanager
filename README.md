@@ -1,5 +1,7 @@
 # Manager für Rinderherden
 
+Wichtige Zeile.
+
 Die folgenden Hinweise sollen bei der Lösung von Aufgaben helfen.
 Sie beschreiben die in den jeweiligen Klassen implementierten
 Fähigkeiten der Objekte.
