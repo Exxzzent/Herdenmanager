@@ -6,7 +6,6 @@ import de.ba.herdenmanagement.R
 import herdenmanagement.view.AckerView
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Looper
 import android.widget.Toast
 import herdenmanagement.model.Acker
 
