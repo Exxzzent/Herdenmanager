@@ -7,6 +7,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import herdenmanagement.model.PositionsElement
 import android.content.res.Resources.NotFoundException
 import android.graphics.*
+import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.Toast
 import herdenmanagement.model.Keys
@@ -16,23 +17,59 @@ import java.beans.PropertyChangeListener
 /**
  * Basisklasse für die Darstellung von Kälbern, Kühen, etc. Diese View kann auf Änderungen
  * an den Properties ihres PositionsElements reagieren, in der Regel durch Anpassung der Anzeige.
- * Wird die Eigenschaft elevation mit [.setElevation] angepasst, werfen
+ * Wird die Eigenschaft elevation mit [setElevation] angepasst, werfen
  * Objekte dieser Klasse einen Schatten auf den Acker.
  *
- *
  * Im Muster Model View Controller (MVC) sind Objekte dieser Klasse Bestandteil der View.
- *
  *
  * Im Muster Obersever ist die Klasse ein ConcreteObserver, der PropertyChangeListener
  * ist das implementierte Observer Interface.
  *
  * @author Steffen Greiffenberg
  */
-open class PositionElementView(
-    context: Context,
-    animator: Animator,
-    positionsElement: PositionsElement
-) : AppCompatImageView(context), PropertyChangeListener {
+open class PositionElementView : AppCompatImageView, PropertyChangeListener {
+
+    constructor(
+        context: Context,
+        animator: Animator,
+        positionsElement: PositionsElement
+    ) : super(context) {
+        this.animator = animator
+        this.positionsElement = positionsElement.copy()
+
+        // ID des PositionsElement übernehmen
+        id = positionsElement.id
+
+        // leeres Mini-Bild setzen
+        setImageBitmap(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8))
+    }
+
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
+    constructor(context: Context) : super(context) {
+        animator = Animator()
+        positionsElement = PositionsElement()
+    }
+
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        animator = Animator()
+        positionsElement = PositionsElement()
+    }
+
+    /**
+     * Default Constructor für alle Android View-Klassen
+     * @constructor
+     */
+    constructor(context: Context, attrs: AttributeSet, style: Int) : super(context, attrs, style) {
+        animator = Animator()
+        positionsElement = PositionsElement()
+    }
 
     /**
      * Animator für die Aktualisierung der GUI
@@ -49,18 +86,6 @@ open class PositionElementView(
      */
     var positionsElement: PositionsElement
         private set
-
-    init {
-        this.animator = animator
-        this.positionsElement = positionsElement.copy()
-        positionsElement.fuegeBeobachterHinzu(this)
-
-        // ID des PositionsElement übernehmen
-        id = positionsElement.id
-
-        // Bild setzen
-        setImageBitmap(aktuellesBild)
-    }
 
     /**
      * Bei Änderung der Höhe des Elements muss der Schatten des
@@ -82,8 +107,8 @@ open class PositionElementView(
      *
      * @param bild darzustellendes Bild
      */
-    override final fun setImageBitmap(bild: Bitmap) {
-        if (elevation == 0f || bild.width == 0) {
+    final override fun setImageBitmap(bild: Bitmap) {
+        if ((elevation == 0f) || (bild.width == 0)) {
             super.setImageBitmap(bild)
             return
         }
@@ -203,10 +228,8 @@ open class PositionElementView(
     fun calculateLayoutParams(width: Float, height: Float): FrameLayout.LayoutParams {
         val acker = positionsElement.acker
         val position = positionsElement.position
-        val columns = acker?.spalten ?: 0
-        val columnWidth: Float = (width / columns.toFloat())
-        val rows = acker?.zeilen ?: 0
-        val rowHeight: Float = (height / rows.toFloat())
+        val columnWidth: Float = width / acker.spalten.toFloat()
+        val rowHeight: Float = height / acker.zeilen.toFloat()
 
         // LayoutParams for child
         val lp = layoutParams as FrameLayout.LayoutParams
@@ -236,7 +259,7 @@ open class PositionElementView(
      * Diese Methode sollte von allen erbenden Klassen überladen werden, um entsprechend des
      * PositionsElements ein passendes Bild zu liefern.
      *
-     * @return Bild auf Basis des [PositionsElement]
+     * Bild auf Basis des [PositionsElement]
      */
     protected open val aktuellesBild: Bitmap
         get() = Bitmap.createBitmap(0, 0, Bitmap.Config.ALPHA_8)

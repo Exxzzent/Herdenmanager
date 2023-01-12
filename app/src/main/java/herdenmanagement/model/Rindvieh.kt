@@ -5,31 +5,27 @@ import de.ba.herdenmanagement.R
 /**
  * Ein Rindvieh kann sich auf einem [Acker] bewegen. Hierzu erbt es die Eigenschaft,
  * eine Position auf einem Acker zu besitzen von [PositionsElement]. Zusätzlich kann
- * eine Kuh diese Position aber auch ändern, zum Beispiel mit [.geheVor].
+ * eine Kuh diese Position aber auch ändern, zum Beispiel mit [geheVor].
  *
  * Es wird sichergestellt, dass die Kuh nicht über den Rand des Ackers hinaus gehen kann.
- * Ist ein Zielfeld der Bewegung ungültig, speichert die Kuh eine Nachricht mittels
- * [PositionsElement.setzeNachricht].
+ * Ist ein Zielfeld der Bewegung ungültig, zeigt die Kuh eine Nachricht mittels
+ * [PositionsElement.zeigeNachricht].
  *
  * Im Muster Model View Controller (MVC) sind Objekte dieser Klasse Bestandteil des Model.
  * Die beobachtete Kuh bietet einen Mechanismus, um Beobachter
- * mit [.fuegeBeobachterHinzu]
- * an- und mit [.entferneBeobachter] abzumelden und diese
- * über Änderungen mittels [PropertyChangeListener.propertyChange]
+ * mit [fuegeBeobachterHinzu] an- und mit [entferneBeobachter] abzumelden und diese
+ * über Änderungen mittels [BeobachtbaresElement.informiereBeobachter]
  * zu informieren.
  *
  * Eigenschaften, die beobachtet werden können sind die Nachrichten des PositionsElements
- * sowie [.richtung], [.status] und [.milchImEuter].
+ * sowie [richtung], [status] und [milchImEuter].
  *
  * @author Steffen Greiffenberg
+ *
+ * @constructor Erzeugt ein Rindvieh
+ * @param name Name des Rindviehs. Kühe können nur bei ihrer Erzeugung benannt werden. Ein späteres Umbenennen ist nicht möglich.
  */
-open class Rindvieh(
-
-    /**
-     * Name des Rindviehs. Kühe können nur bei ihrer Erzeugung benannt werden.
-     * Ein späteres Umbenennen ist nicht möglich.
-     */
-    override val name: String) : PositionsElement() {
+open class Rindvieh(override val name: String) : PositionsElement() {
 
     /**
      * Richtung der Küh. Rindiecher schauen gern nach Norden. Selten nach Süden, manchmal aber
@@ -38,7 +34,7 @@ open class Rindvieh(
     internal var richtung: RichtungsTyp = RichtungsTyp.OST
         /**
          * Setzt die Blickrichtung der Kuh. Dies ist von außen nicht möglich, nur ein Aufruf von
-         * [.dreheDichLinksRum] oder [.dreheDichRechtsRum] ändert die Blickrichtung.
+         * [dreheDichLinksRum] oder [dreheDichRechtsRum] ändert die Blickrichtung.
          */
         set(value) {
             val oldRindvieh = clone()
@@ -48,14 +44,14 @@ open class Rindvieh(
         }
 
     /**
-     * Anzahl (Liter) Milch im Euter. Die Zahl erhöht sich durch [.frissGras]. Sie
-     * wird reduziert durch [.gibMilch]. Das Melken funktioniert jedoch nur,
+     * Anzahl (Liter) Milch im Euter. Die Zahl erhöht sich durch [frissGras]. Sie
+     * wird reduziert durch [gibMilch]. Das Melken funktioniert jedoch nur,
      * wenn auf dem Acker an dieser Stelle ein Kalb steht.
      */
     private var milchImEuter: Int = 0
         /**
          * Setzt den Status der Kuh. Dies ist von außen nicht möglich, nur ein Aufruf von
-         * [.frissGras] oder [.gibMilch] ändert die Milchmenge.
+         * [frissGras] oder [gibMilch] ändert die Milchmenge.
          *
          * Die Observer werden bei Änderungen des Milchstandes informiert.
          */
@@ -72,7 +68,7 @@ open class Rindvieh(
     internal var status: StatusTyp = StatusTyp.WARTET
         /**
          * Setzt den Status der Kuh. Dies ist von außen nicht möglich, nur ein Aufruf von
-         * zum Beispiel [.frissGras] oder [.gibMilch] ändert den Status.
+         * zum Beispiel [frissGras] oder [gibMilch] ändert den Status.
          *
          * Die Observer werden bei Änderungen des Stauts informiert.
          */
@@ -102,7 +98,7 @@ open class Rindvieh(
      * der Kuh berechnet. Hier erfolgt noch keine Prüfung, ob diese Position auf dem [Acker]
      * auch wirklich existiert.
      */
-    val positionDavor: Position
+    private val positionDavor: Position
         get() {
             val position = this.position
             when (richtung) {
@@ -119,6 +115,7 @@ open class Rindvieh(
      * der Kuh berechnet. Hier erfolgt noch keine Prüfung, ob diese Position auf dem [Acker]
      * auch wirklich existiert.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     val positionDahinter: Position
         get() {
             val position = this.position
@@ -132,7 +129,7 @@ open class Rindvieh(
         }
 
     /**
-     * Die Kuh wird in Blickrichtung (siehe [.richtung]) bewegt. Die Bewegung ist nur
+     * Die Kuh wird in Blickrichtung (siehe [richtung]) bewegt. Die Bewegung ist nur
      * möglich, wenn vor der Kuh auf dem [Acker] noch ein Feld existiert.
      */
     open fun geheVor() {
@@ -144,7 +141,7 @@ open class Rindvieh(
     }
 
     /**
-     * Die Kuh wird entgegen der Blickrichtung (siehe [.richtung]) bewegt. Experten nennnen
+     * Die Kuh wird entgegen der Blickrichtung (siehe [richtung]) bewegt. Experten nennnen
      * dies eine "rückwärtige Bewegung", Kinder sagen gern auch "nach hinten". Die Bewegung ist nur
      * möglich, wenn hinter der Kuh auf dem [Acker] noch ein Feld existiert.
      */
@@ -163,17 +160,14 @@ open class Rindvieh(
      * [RichtungsTyp.NORD] schauen.
      *
      *
-     * Die [.gibPosition] der Kuh ändert sich durch die Drehbewegung nicht.
+     * Die [position] der Kuh ändert sich durch die Drehbewegung nicht.
      */
     fun dreheDichLinksRum() {
-        if (richtung == RichtungsTyp.OST) {
-            richtung = RichtungsTyp.NORD
-        } else if (richtung == RichtungsTyp.NORD) {
-            richtung = RichtungsTyp.WEST
-        } else if (richtung == RichtungsTyp.WEST) {
-            richtung = RichtungsTyp.SUED
-        } else if (richtung == RichtungsTyp.SUED) {
-            richtung = RichtungsTyp.OST
+        richtung = when (richtung) {
+            RichtungsTyp.OST -> RichtungsTyp.NORD
+            RichtungsTyp.NORD -> RichtungsTyp.WEST
+            RichtungsTyp.WEST -> RichtungsTyp.SUED
+            RichtungsTyp.SUED -> RichtungsTyp.OST
         }
     }
 
@@ -185,17 +179,14 @@ open class Rindvieh(
      * [RichtungsTyp.SUED] schauen.
      *
      *
-     * Die [.gibPosition] der Kuh ändert sich durch die Drehbewegung nicht.
+     * Die [position] der Kuh ändert sich durch die Drehbewegung nicht.
      */
     fun dreheDichRechtsRum() {
-        if (richtung == RichtungsTyp.OST) {
-            richtung = RichtungsTyp.SUED
-        } else if (richtung == RichtungsTyp.SUED) {
-            richtung = RichtungsTyp.WEST
-        } else if (richtung == RichtungsTyp.WEST) {
-            richtung = RichtungsTyp.NORD
-        } else if (richtung == RichtungsTyp.NORD) {
-            richtung = RichtungsTyp.OST
+        richtung = when (richtung) {
+            RichtungsTyp.OST -> RichtungsTyp.SUED
+            RichtungsTyp.SUED -> RichtungsTyp.WEST
+            RichtungsTyp.WEST -> RichtungsTyp.NORD
+            RichtungsTyp.NORD -> RichtungsTyp.OST
         }
     }
 
@@ -216,14 +207,14 @@ open class Rindvieh(
 
     /**
      * Der Hauptzweck von [Gras] ist es, von Kühen gefressen zu werden. Die Kuh prüft
-     * zunächst, ob an der aktuellen Position (Abfrage mit [.gibPosition]) Gras wächst.
+     * zunächst, ob an der aktuellen Position (Abfrage mit [position]) Gras wächst.
      * Wenn ja, wird dies gefressen (also auch vom Acker entfernt). Wenn nein, setzt die Kuh
-     * eine Fehlermeldung mittels [.setzeNachricht].
+     * eine Fehlermeldung mittels [nachricht].
      */
     fun frissGras() {
         if (this.acker.istDaGras(position)) {
             this.status = StatusTyp.FRISST
-            milchImEuter = milchImEuter + 1
+            milchImEuter += 1
             this.acker.entferneGras(position)
             this.status = StatusTyp.WARTET
         } else {
@@ -233,10 +224,9 @@ open class Rindvieh(
 
     /**
      * Steht an der aktuellen Position auf dem [Acker] auch ein [Kalb], kann die
-     * Kuh gemolken werden. Nach dem Melken ist die Anzahl in [.milchImEuter] natürlich 0.
+     * Kuh gemolken werden. Nach dem Melken ist die Anzahl in [milchImEuter] natürlich 0.
      * Soll eine Kuh ohne Milch im Euter gemolken werden, wird auch eine Fehlernachricht mittels
-     * [.setzeNachricht] gespeichert.
-     *
+     * [nachricht] gespeichert.
      *
      * Die Oberserver werden über die Reduzierung der Milchmenge informiert. Zusätzlich wird
      * der Erfolg oder Nicht-Erfolg des melkens als Nachricht gespeichert.
@@ -259,8 +249,9 @@ open class Rindvieh(
     }
 
     /**
-     * @return true, wenn [.milchImEuter] > 0
+     * @return true, wenn [milchImEuter] > 0
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     val istMilchImEuter: Boolean
         get() {
             return milchImEuter > 0

@@ -8,7 +8,6 @@ import java.util.ArrayList
  * Beobachtabere (engl. observable) Objekte haben Beobachter (engl. Obserserver), die über die
  * Änderungen an den Eigenschaften des Objekts informiert werden.
  *
- *
  * Wikipedia beschreibt dies so: Das beobachtete Objekt bietet einen Mechanismus, um
  * Beobachter an- und abzumelden und diese über Änderungen zu informieren. Es kennt alle
  * seine Beobachter nur über die (überschaubare) Schnittstelle Beobachter. Änderungen
@@ -17,17 +16,15 @@ import java.util.ArrayList
  * nicht zu kennen. Die Beobachter implementieren ihrerseits eine (spezifische) Methode,
  * um auf die Änderung zu reagieren.
  *
- *
  * In Java existiert bereits eine Basiklasse [java.util.Observable], die über eine
  * Lise an [java.util.Observer] Objekten verfügt. Leider werden von diesen Objekten nicht
  * die Art der Änderung propagiert.
- *
  *
  * Für das Herdenmanagement besser geeignet ist deshalb das Interface
  * [java.beans.PropertyChangeListener], die von den Obserser-Objekten implementiert wird.
  * Eine Liste dieser Objekte wird von dieser Klasse verwaltet. An diese werden bei Änderungen
  * Instanzen von [PropertyChangeEvent] gesendet. Diese beinhalten den alten und neuen Wert,
- * den Namen der Eigenschaft und das geänderte Objekt selbst (also stets #this).
+ * den Namen der Eigenschaft und das geänderte Objekt selbst (also stets this).
  *
  * @author Steffen Greiffenberg
  */
@@ -42,7 +39,7 @@ open class BeobachtbaresElement {
     /**
      * Informiert alle Elemente in #listeners
      *
-     * @param property Konstante, wie [PositionsElement.PROPERTY_NACHRICHT] oder [PositionsElement.PROPERTY_POSITION]
+     * @param property Konstante, wie [Keys.PROPERTY_NACHRICHT] oder [Keys.PROPERTY_POSITION]
      * @param oldValue Alter Wert
      * @param newValue Neuer Wert
      */

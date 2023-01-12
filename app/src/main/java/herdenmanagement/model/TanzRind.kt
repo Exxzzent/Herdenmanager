@@ -9,24 +9,23 @@ package herdenmanagement.model
  * Im Muster Model View Controller sind Objekte dieser Klasse Bestandteil des Model.
  *
  * @author Steffen Greiffenberg
+ *
+ * @constructor Erzeugt ein TanzRind. Es wird nur der geerbte Contructor aufgerufen.
+ * @param name des Rindviehs. Kühe können nur bei ihrer Erzeugung benannt werden. Ein späteres Umbenennen ist nicht möglich.
  */
-class TanzRind
-    /**
-     * Erzeugt ein TanzRind. Es wird nur der geerbte Contructor aufgerufen.
-     */
-    (name: String) : Rindvieh(name) {
+class TanzRind(name: String) : Rindvieh(name) {
 
     /**
      * @return Nächste Position rechts von der Kuh
      */
-    protected fun gibNaechstePositionRechts(): Position {
+    protected fun positionRechts(): Position {
         return position
     }
 
     /**
      * @return Nächste Position links von der Kuh
      */
-    protected fun gibNaechstePositionLinks(): Position {
+    protected fun positionLinks(): Position {
         return position
     }
 

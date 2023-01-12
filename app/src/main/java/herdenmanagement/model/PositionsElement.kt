@@ -3,11 +3,9 @@ package herdenmanagement.model
 /**
  * Ein Positionselement kann auf einem [Acker] positioniert werden.
  *
- *
  * Änderungen an seinen Eigenschaften kann es PropertyChangeListener senden. Hierzu
- * müssen diese den Objekten dieser Klasse mit [.fuegeBeobachterHinzu]
+ * müssen diese den Objekten dieser Klasse mit [fuegeBeobachterHinzu]
  * hinzugefügt werden.
- *
  *
  * Jedes PositionsElement verfügt über eine eindeutige ID.
  * Im Muster Model View Controller sind Objekte erbender Klassen Bestandteil des Model.
@@ -46,7 +44,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
         /**
          * Die PropertyChangeListener werden informiert.
          *
-         * @param position Neue Position auf dem Acker
+         * @param value Neue Position auf dem Acker
          */
         set(value) {
             val oldElement = clone()
@@ -56,7 +54,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
         }
 
     /**
-     * Bewegungen oder andere Aktionen des Elements können Nachrichten (z.B. Fehlermeldungen)
+     * Bewegungen oder andere Aktionen des Elements können Nachrichten (z. B. Fehlermeldungen)
      * erzeugen. Wenn der PropertyChangeListener dem Schlüssel PROPERTY_NACHRICHT lauscht,
      * wird er über siese Nachrichten informiert.
      */
@@ -81,7 +79,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
      *
      * @param nachricht Letzte Nachricht (Fehler- oder Vollzugsmeldung)
      */
-    fun setzeNachricht(nachricht: String) {
+    fun zeigeNachricht(nachricht: String) {
         val oldElement = clone()
         this.nachricht = nachricht
         val newElement = clone()

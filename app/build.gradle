@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: "org.jetbrains.dokka"
 
 android {
     compileSdkVersion 32
@@ -30,9 +31,9 @@ android {
 dependencies {
     // libraries from maven repositories
     // implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.20"
 
     // compiling tests requires the dependencies of the source code under test
     testImplementation 'junit:junit:4.13.2'
@@ -45,9 +46,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    androidTestImplementation "androidx.core:core-ktx:1.8.0"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.21"
-
+    androidTestImplementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.20'
 }
 
 repositories {

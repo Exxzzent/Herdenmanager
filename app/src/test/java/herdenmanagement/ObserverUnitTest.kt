@@ -3,7 +3,6 @@ package herdenmanagement
 import herdenmanagement.model.*
 import herdenmanagement.model.Rindvieh.RichtungsTyp
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
@@ -11,17 +10,12 @@ import java.beans.PropertyChangeListener
 class ObserverUnitTest {
 
     private var evt: PropertyChangeEvent? = null
-    private var listener: PropertyChangeListener? = null
-
-    @Before
-    fun setUp() {
-        listener = PropertyChangeListener { evt -> this@ObserverUnitTest.evt = evt }
-    }
+    private var listener: PropertyChangeListener = PropertyChangeListener { evt -> this@ObserverUnitTest.evt = evt }
 
     @Test
     fun observeAcker() {
         val acker = Acker(10, 10)
-        acker.fuegeBeobachterHinzu(listener!!)
+        acker.fuegeBeobachterHinzu(listener)
 
         acker.lassGrasWachsen(Position(1, 1))
         Assert.assertEquals(Keys.PROPERTY_GRAESER, evt!!.propertyName)
@@ -31,8 +25,7 @@ class ObserverUnitTest {
         Assert.assertEquals(Keys.PROPERTY_KALB, evt!!.propertyName)
         Assert.assertTrue(evt!!.newValue is Kalb)
 
-        val rindvieh = Rindvieh("Rindvieh")
-        acker.lassRindWeiden(rindvieh)
+        acker.lassRindWeiden("Rindvieh")
         Assert.assertEquals(Keys.PROPERTY_VIECHER, evt!!.propertyName)
         Assert.assertTrue(evt!!.newValue is Rindvieh)
     }
@@ -40,9 +33,8 @@ class ObserverUnitTest {
     @Test
     fun observeRindvieh() {
         val acker = Acker(10, 10)
-        val rindvieh = Rindvieh("Rindvieh")
-        rindvieh.fuegeBeobachterHinzu(listener!!)
-        acker.lassRindWeiden(rindvieh)
+        val rindvieh = acker.lassRindWeiden("Rindvieh")
+        rindvieh.fuegeBeobachterHinzu(listener)
 
         rindvieh.geheVor()
         Assert.assertEquals(Keys.PROPERTY_POSITION, evt!!.propertyName)

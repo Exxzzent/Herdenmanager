@@ -79,8 +79,7 @@ class AckerUnitTest {
     @Test
     fun melkeRind() {
         val acker = Acker(5, 5)
-        val rindvieh = Rindvieh("Rindvieh")
-        acker.lassRindWeiden(rindvieh)
+        val rindvieh = acker.lassRindWeiden("Rindvieh")
         acker.lassGrasWachsen(Position(0, 0))
         rindvieh.frissGras()
 

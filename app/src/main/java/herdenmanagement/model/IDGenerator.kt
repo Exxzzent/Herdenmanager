@@ -10,7 +10,7 @@ object IDGenerator {
     private val nextGeneratedId = AtomicInteger(1)
 
     /**
-     * Erzeugt eine neue ID. Der Wert in [.nextGeneratedId] wird hierfür hochgezählt
+     * Erzeugt eine neue ID. Der Wert in [nextGeneratedId] wird hierfür hochgezählt
      *
      * @return generierte ID
      */

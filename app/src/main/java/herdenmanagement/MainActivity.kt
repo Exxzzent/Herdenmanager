@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
      *
      * @param savedInstanceState If the activity is being re-initialized after
      * previously being shut down then this Bundle contains the data it most
-     * recently supplied in [.onSaveInstanceState].  ***Note: Otherwise it is null.***
+     * recently supplied in [onSaveInstanceState].  ***Note: Otherwise it is null.***
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Called after [.onCreate].
+     * Called after [onCreate].
      */
     override fun onStart() {
         super.onStart()
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
      * Show a simple message
      */
     fun toast(message: Any) {
-        runOnUiThread({ Toast.makeText(this, "" + message, Toast.LENGTH_LONG).show() })
+        runOnUiThread { Toast.makeText(this, "$message", Toast.LENGTH_LONG).show() }
     }
 
     /**

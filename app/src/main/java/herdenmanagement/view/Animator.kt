@@ -12,21 +12,22 @@ import java.util.concurrent.ArrayBlockingQueue
  * Der Animator versieht die Statusänderung von Objekten mit einer Animation. Ändert eine
  * View zum Beispiel ihre Position, sorgt der Animator für einen sanften Übergang. Der Nutzer
  * erhält den Eindruck, dass die View sich tatsächlich langsam zu den neuen Koordianten bewegt.
- * <P>
+ *
  * Ein Animator wird folgerichtig den View-Klassen (@see [PositionElementView] im
  * HerdenManagement zugewiesen und von der [AckerView] erzeugt und verwaltet.
-</P> * <P>
+ *
  * Die Methoden des Klassen aus dem Paket herdenmanagement.model laufen in einem Thread,
  * der von den Methoden der Klassen aus dem Paket herdenmanagement.view losgelöst ist.
  * Der Grund liegt in der Tatsache begründet, dass Änderungen am Layout nur im
  * Main Thread einer Android App vorgenommen werden können.
  *
  * @author Steffen Greiffenberg
-</P> */
+ */
 class Animator {
 
     /**
      * Alle Aktionen werden direkt ausgeführt ohne Wartezeit.
+     * [Threading.ASYNCHRONOUS], [Threading.SYNCHRONOUS] oder [Threading.ASYNCHRONOUS_NO_WAIT]
      */
     internal var threading = Threading.SYNCHRONOUS
         set(value) {
@@ -57,13 +58,6 @@ class Animator {
      * Liste von Actions, die nacheinander abgearbeitet werden
      */
     private val actions: Queue<Action> = ArrayBlockingQueue(1024)
-
-    /**
-     * @return SYNCHRONOUS oder ASYNCHRONOUS
-     */
-    fun getThreading(): Threading {
-        return threading
-    }
 
     /**
      * Action, die vom Animatopr ausgeführt werden kann.
@@ -137,6 +131,10 @@ class Animator {
         }.start()
     }
 
+    /**
+     * Ein companion object wird erzeugt, wenn die Klasse geladen wird. Es speichert also für alle
+     * Objekt der Klasse Werte. In diesem Fall haben alle Animatoren im Projekt die selbe WARTEZEIT.
+     */
     companion object {
         /**
          * Wartezeit für Bewegungen in ms
