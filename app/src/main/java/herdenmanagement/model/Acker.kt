@@ -18,16 +18,12 @@ import java.util.ArrayList
  *
  * @author Steffen Greiffenberg
  */
-class Acker(
-    /**
-     * Anzahl der Spalten auf dem Acker
-     */
-    var spalten: Int,
-    /**
-     * Anzahl der Zeilen auf dem Acker
-     */
-    var zeilen: Int
-) : BeobachtbaresElement() {
+class Acker() : BeobachtbaresElement() {
+
+    constructor(spalten: Int, zeilen: Int) : this() {
+        this.spalten = spalten
+        this.zeilen = zeilen
+    }
 
     /**
      * Objekte der Klasse Rindvieh, die auf dem Acker unterwegs sind
@@ -54,6 +50,30 @@ class Acker(
             val oldThreading = field
             field = value
             informiereBeobachter(Keys.PROPERTY_THREADING, oldThreading, value)
+        }
+
+    /**
+     * Setzt die Anzahl der Spalten des Ackers
+     *
+     * @param spalten Anzahl der Spalten
+     */
+    var spalten: Int = 3
+        set (value) {
+            val oldValue = field
+            field = value
+            informiereBeobachter(Keys.PROPERTY_SIZE, oldValue, value)
+        }
+
+    /**
+     * Setzt die Anzahl der Spalten des Ackers
+     *
+     * @param spalten Anzahl der Spalten
+     */
+    var zeilen: Int = 3
+        set (value) {
+            val oldValue = field
+            field = value
+            informiereBeobachter(Keys.PROPERTY_SIZE, oldValue, value)
         }
 
     /**
@@ -137,11 +157,10 @@ class Acker(
     }
 
     /**
-     * Kühe können mit [Rindvieh.frissGras] Gras fressen oder
-     * mit [Rindvieh.raucheGras] Gras rauchen.
+     * Entfernt Gras an der Position.
      *
      * @param position Zu prüfende Position
-     * @return true, wenn an der Position [Gras] wächst
+     * @return true, wenn an der Position [Gras] war
      */
     fun entferneGras(position: Position): Boolean {
         for (gras in graeser) {
@@ -152,6 +171,30 @@ class Acker(
             }
         }
         return false
+    }
+
+    /**
+     * Entfernt das Rindvieh, wenn es vorher auf dem Acker stand.
+     *
+     * @param rind Zu entfernendes Rindvieh
+     * @return true, wenn ein Rind entfernt wurde
+     */
+    fun entferneRind(rind: Rindvieh): Boolean {
+        if (viecher.contains(rind)) {
+            viecher.remove(rind)
+            informiereBeobachter(Keys.PROPERTY_VIECHER, rind, null)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Entfernt alle Rinder vom Acker
+     */
+    fun entferneRinder() {
+        for (rind in ArrayList(viecher)) {
+            entferneRind(rind)
+        }
     }
 
     /**

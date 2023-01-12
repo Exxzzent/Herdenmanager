@@ -308,6 +308,14 @@ class AckerView : FrameLayout, PropertyChangeListener {
         if (Keys.PROPERTY_GRAESER == evt.propertyName) {
             aktualisiereGraeser(evt.oldValue as? Gras, evt.newValue as? Gras)
         }
+        if (Keys.PROPERTY_SIZE == evt.propertyName) {
+            animator.performAction(object : Animator.Action() {
+                override fun run() {
+                    requestLayout()
+                    invalidate()
+                }
+            })
+        }
         if (Keys.PROPERTY_THREADING == evt.propertyName) {
             animator.threading = evt.newValue as Threading
         }
