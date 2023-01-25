@@ -34,7 +34,7 @@ class AckerView : FrameLayout, PropertyChangeListener {
     /**
      * Dargestellter Acker
      */
-    internal var acker: Acker
+    var acker: Acker
         /**
          * Beim Setzen des Ackers werden die momentan auf diesem vorhandene PositionsElement Objekte
          * angezeigt.

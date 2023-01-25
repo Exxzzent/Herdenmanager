@@ -31,7 +31,7 @@ open class Rindvieh(override val name: String) : PositionsElement() {
      * Richtung der Küh. Rindiecher schauen gern nach Norden. Selten nach Süden, manchmal aber
      * eben auch nach Osten oder Westen - jenachdem, welche Richtung hier abgelegt wird.
      */
-    internal var richtung: RichtungsTyp = RichtungsTyp.OST
+    var richtung: RichtungsTyp = RichtungsTyp.OST
         /**
          * Setzt die Blickrichtung der Kuh. Dies ist von außen nicht möglich, nur ein Aufruf von
          * [dreheDichLinksRum] oder [dreheDichRechtsRum] ändert die Blickrichtung.
@@ -65,7 +65,7 @@ open class Rindvieh(override val name: String) : PositionsElement() {
     /**
      * Status der Kuh. Sie kann sich bewegen, fressen, rauchen oder warten.
      */
-    internal var status: StatusTyp = StatusTyp.WARTET
+    var status: StatusTyp = StatusTyp.WARTET
         /**
          * Setzt den Status der Kuh. Dies ist von außen nicht möglich, nur ein Aufruf von
          * zum Beispiel [frissGras] oder [gibMilch] ändert den Status.

@@ -29,7 +29,7 @@ class Animator {
      * Alle Aktionen werden direkt ausgeführt ohne Wartezeit.
      * [Threading.ASYNCHRONOUS], [Threading.SYNCHRONOUS] oder [Threading.ASYNCHRONOUS_NO_WAIT]
      */
-    internal var threading = Threading.SYNCHRONOUS
+    var threading = Threading.SYNCHRONOUS
         set(value) {
             if (field == Threading.SYNCHRONOUS && (value == Threading.ASYNCHRONOUS || value == Threading.ASYNCHRONOUS_NO_WAIT)) {
                 field = value
