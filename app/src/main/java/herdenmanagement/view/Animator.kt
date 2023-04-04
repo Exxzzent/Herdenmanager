@@ -3,7 +3,6 @@ package herdenmanagement.view
 import herdenmanagement.model.Threading
 import android.os.Handler
 import android.os.Looper
-import kotlin.jvm.JvmOverloads
 import android.os.SystemClock
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
@@ -29,24 +28,21 @@ class Animator {
      * Alle Aktionen werden direkt ausgeführt ohne Wartezeit.
      * [Threading.ASYNCHRONOUS], [Threading.SYNCHRONOUS] oder [Threading.ASYNCHRONOUS_NO_WAIT]
      */
-    internal var threading = Threading.SYNCHRONOUS
+    var threading = Threading.SYNCHRONOUS
         set(value) {
-            if (field == Threading.SYNCHRONOUS && (value == Threading.ASYNCHRONOUS || value == Threading.ASYNCHRONOUS_NO_WAIT)) {
+            if (field != value) {
                 field = value
-                running = true
-                start()
-            } else if ((field == Threading.ASYNCHRONOUS || field == Threading.ASYNCHRONOUS_NO_WAIT) && value == Threading.SYNCHRONOUS) {
-
-                // alle Aktionen abarbeiten
-                if (running) {
-                    while (!actions.isEmpty()) {
-                        SystemClock.sleep(10)
+                when (value) {
+                    Threading.SYNCHRONOUS -> {
+                        while (running && actions.isNotEmpty()) SystemClock.sleep(10)
+                    }
+                    Threading.ASYNCHRONOUS, Threading.ASYNCHRONOUS_NO_WAIT -> {
+                        running = true
+                        start()
                     }
                 }
-                field = value
-                running = false
+                running = value != Threading.SYNCHRONOUS
             }
-
         }
 
     /**
@@ -58,36 +54,6 @@ class Animator {
      * Liste von Actions, die nacheinander abgearbeitet werden
      */
     private val actions: Queue<Action> = ArrayBlockingQueue(1024)
-
-    /**
-     * Action, die vom Animatopr ausgeführt werden kann.
-     */
-    abstract class Action
-
-    /**
-     * Erzeugt eine Action. Die Wartezeit nach Ausführung der Action
-     * ist [Animator.WARTEZEIT]
-     */ @JvmOverloads constructor(
-        /**
-         * Wartezeit nach Ausführung der Action
-         */
-        private val waitingTime: Int = WARTEZEIT
-    ) : Runnable {
-        /**
-         * Schläft die in waitingTime eingestellte Zahl Millisekunden
-         */
-        fun sleep() {
-            if (waitingTime < 0) {
-                return
-            }
-            SystemClock.sleep(waitingTime.toLong())
-        }
-        /**
-         * Erzeugt eine Action
-         *
-         * @param waitingTime Wartezeit nach Ausführung der Action
-         */
-    }
 
     /**
      * Fügt eine Action hinzu
@@ -111,7 +77,7 @@ class Animator {
      * Startet den Animator. Dieser Thread arbeitet alle Actions in actions ab und führt
      * sie im UI-Thread des Context aus.
      */
-    fun start() {
+    private fun start() {
         Thread {
             while (running) {
                 if (!actions.isEmpty()) {

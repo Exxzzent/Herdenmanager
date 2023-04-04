@@ -4,8 +4,8 @@ import android.content.Context
 import de.ba.herdenmanagement.R
 import android.text.TextPaint
 import herdenmanagement.model.Rindvieh
-import herdenmanagement.model.Rindvieh.StatusTyp
-import herdenmanagement.model.Rindvieh.RichtungsTyp
+import herdenmanagement.model.Rindvieh.Status
+import herdenmanagement.model.Richtung
 import android.graphics.*
 import android.util.AttributeSet
 import herdenmanagement.model.PositionsElement
@@ -53,26 +53,19 @@ class RindviehView : PositionElementView {
      */
     override val aktuellesBild: Bitmap
         get() {
-            if (StatusTyp.FRISST == this.rindvieh.status) {
-                return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_gras)
-            } else if (StatusTyp.RAUCHT == this.rindvieh.status) {
-                return BitmapFactory.decodeResource(context.resources, R.drawable.kuh_rauch)
-            }
-
-            return when (this.rindvieh.richtung) {
-                RichtungsTyp.NORD -> {
-                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_hinten)
-                }
-                RichtungsTyp.WEST -> {
-                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_links)
-                }
-                RichtungsTyp.SUED -> {
-                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_vorn)
-                }
-                RichtungsTyp.OST -> {
-                    BitmapFactory.decodeResource(context.resources, R.drawable.kuh_rechts)
+            // ID des Bildes ermitteln
+            val drawableId = when (rindvieh.status) {
+                Status.FRISST -> R.drawable.kuh_gras
+                Status.RAUCHT -> R.drawable.kuh_rauch
+                else -> when (rindvieh.richtung) {
+                    Richtung.NORD -> R.drawable.kuh_hinten
+                    Richtung.WEST -> R.drawable.kuh_links
+                    Richtung.SUED -> R.drawable.kuh_vorn
+                    Richtung.OST -> R.drawable.kuh_rechts
                 }
             }
+            // Bild aus den Ressourcen ermitteln
+            return BitmapFactory.decodeResource(context.resources, drawableId)
         }
 
     /**
