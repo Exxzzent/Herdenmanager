@@ -8,6 +8,7 @@ import android.transition.TransitionManager
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import herdenmanagement.model.*
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
@@ -24,7 +25,11 @@ import kotlin.math.max
  *
  * @author Steffen Greiffenberg
  */
-class AckerView : FrameLayout, PropertyChangeListener {
+class AckerView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr), PropertyChangeListener {
 
     /**
      * Versieht die Statusänderung von Objekten mit einer Animation
@@ -34,7 +39,7 @@ class AckerView : FrameLayout, PropertyChangeListener {
     /**
      * Dargestellter Acker
      */
-    internal var acker: Acker
+    var acker = Acker(3, 4)
         /**
          * Beim Setzen des Ackers werden die momentan auf diesem vorhandene PositionsElement Objekte
          * angezeigt.
@@ -49,15 +54,9 @@ class AckerView : FrameLayout, PropertyChangeListener {
                 field.entferneBeobachter(this)
 
                 // add initial objects from acker
-                for (rindvieh in field.viecher) {
-                    aktualisiereVieh(rindvieh, null)
-                }
-                for (kalb in field.kaelber) {
-                    aktualisiereKalb(kalb, null)
-                }
-                for (gras in field.graeser) {
-                    aktualisiereGraeser(gras, null)
-                }
+                field.viecher.forEach { aktualisiereVieh(it, null) }
+                field.kaelber.forEach { aktualisiereKalb(it, null) }
+                field.graeser.forEach { aktualisiereGraeser(it, null) }
             }
 
             // Der neue Acker wird gespeichert
@@ -65,15 +64,10 @@ class AckerView : FrameLayout, PropertyChangeListener {
 
             // Die Verknüpfung mit dem neuen Acker herstellen
             field.fuegeBeobachterHinzu(this)
-            for (rindvieh in field.viecher) {
-                aktualisiereVieh(null, rindvieh)
-            }
-            for (kalb in field.kaelber) {
-                aktualisiereKalb(null, kalb)
-            }
-            for (gras in field.graeser) {
-                aktualisiereGraeser(null, gras)
-            }
+            field.viecher.forEach { aktualisiereVieh(null, it) }
+            field.kaelber.forEach { aktualisiereKalb(null, it) }
+            field.graeser.forEach { aktualisiereGraeser(null, it) }
+
             animator.threading = field.animation
         }
 
@@ -93,75 +87,21 @@ class AckerView : FrameLayout, PropertyChangeListener {
     private var cellSpacing = 0f
 
     /**
-     * Erzeugt eine neue Ansicht für einen Acker
-     *
-     * @param context Context der App
-     */
-    constructor(context: Context?) : super(context!!, null, R.attr.ackerViewStyle) {
-        acker = Acker(3, 4)
-        initAckerView(null, R.attr.ackerViewStyle)
-        setWillNotDraw(false)
-    }
-
-    /**
-     * Erzeugt eine neue Ansicht für einen Acker
-     *
-     * @param context Context der App
-     * @param attrs   Attribute zur grafischen Darstellung
-     */
-    constructor(context: Context?, attrs: AttributeSet?) : super(
-        context!!,
-        attrs,
-        R.attr.ackerViewStyle
-    ) {
-        acker = Acker(3, 4)
-        initAckerView(attrs, R.attr.ackerViewStyle)
-        setWillNotDraw(false)
-    }
-
-    /**
-     * Erzeugt eine neue Ansicht für einen Acker
-     *
-     * @param context      Context der App
-     * @param attrs        Attribute zur grafischen Darstellung
-     * @param defStyleAttr Attribute zum Stil
-     */
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context!!,
-        attrs,
-        defStyleAttr
-    ) {
-        acker = Acker(3, 4)
-        initAckerView(attrs, defStyleAttr)
-        setWillNotDraw(false)
-    }
-
-    /**
      * Initialisieren der View mit ihren Attributen
-     *
-     * @param attrs Attribute des aktuellen Layouts
-     * @param defStyleAttr Voreingestellte Attribute
      */
-    private fun initAckerView(attrs: AttributeSet?, defStyleAttr: Int) {
-        // Attribute incl. default-Werte lesen
-        val a = context.obtainStyledAttributes(
-            attrs, R.styleable.AckerView, defStyleAttr, R.style.AckerViewStyle
-        )
+    init {
+        setWillNotDraw(false)
 
-        // Abstand der Zellen
-        cellSpacing = a.getDimensionPixelSize(R.styleable.AckerView_cellSpacing, 8).toFloat()
+        context.withStyledAttributes(attrs, R.styleable.AckerView) {
+            cellSpacing = getDimension(R.styleable.AckerView_cellSpacing, 8f)
+            paint.color = getColor(R.styleable.AckerView_cellBackgroundColor, Color.WHITE)
+            textPaint.color = getColor(R.styleable.AckerView_android_textColor, Color.LTGRAY)
+            textPaint.textSize = getDimension(R.styleable.AckerView_cellSpacing, 40f)
+        }
 
-        // Färbung der Zellen
-        val cellColor = a.getColor(R.styleable.AckerView_cellBackgroundColor, Color.WHITE)
-        paint.color = cellColor
+        // Dicke der Zellen
         paint.strokeWidth = 6f
-
-        // Text in den Zellen
-        val textColor = a.getColor(R.styleable.AckerView_android_textColor, Color.LTGRAY)
-        textPaint.color = textColor
-        val textSize = a.getDimensionPixelSize(R.styleable.AckerView_android_textSize, 40)
-        textPaint.textSize = textSize.toFloat()
-        a.recycle()
+        acker.fuegeBeobachterHinzu(this)
     }
 
     /**
@@ -297,25 +237,23 @@ class AckerView : FrameLayout, PropertyChangeListener {
      * @param evt Interessant sind z. B. die Nachrichten mit den Property-Name Acker.PROPERTY_KALB
      */
     override fun propertyChange(evt: PropertyChangeEvent) {
-        if (Keys.PROPERTY_KALB == evt.propertyName) {
-            aktualisiereKalb(evt.oldValue as? Kalb, evt.newValue as? Kalb)
-        }
-        if (Keys.PROPERTY_VIECHER == evt.propertyName) {
-            aktualisiereVieh(evt.oldValue as? Rindvieh, evt.newValue as? Rindvieh)
-        }
-        if (Keys.PROPERTY_GRAESER == evt.propertyName) {
-            aktualisiereGraeser(evt.oldValue as? Gras, evt.newValue as? Gras)
-        }
-        if (Keys.PROPERTY_SIZE == evt.propertyName) {
-            animator.performAction(object : Animator.Action() {
+        when (evt.propertyName) {
+            Keys.PROPERTY_KALB -> aktualisiereKalb(evt.oldValue as? Kalb, evt.newValue as? Kalb)
+            Keys.PROPERTY_VIECHER -> aktualisiereVieh(
+                evt.oldValue as? Rindvieh,
+                evt.newValue as? Rindvieh
+            )
+            Keys.PROPERTY_GRAESER -> aktualisiereGraeser(
+                evt.oldValue as? Gras,
+                evt.newValue as? Gras
+            )
+            Keys.PROPERTY_SIZE -> animator.performAction(object : Action() {
                 override fun run() {
                     requestLayout()
                     invalidate()
                 }
             })
-        }
-        if (Keys.PROPERTY_THREADING == evt.propertyName) {
-            animator.threading = evt.newValue as Threading
+            Keys.PROPERTY_THREADING -> animator.threading = evt.newValue as Threading
         }
     }
 
@@ -398,7 +336,7 @@ class AckerView : FrameLayout, PropertyChangeListener {
      * @param view zu entfernende View
      */
     private fun removeViewAnimated(view: View) {
-        animator.performAction(object : Animator.Action() {
+        animator.performAction(object : Action() {
             override fun run() {
                 // Ausblenden -> Alpha = 0
                 TransitionManager.beginDelayedTransition(this@AckerView)
@@ -420,7 +358,7 @@ class AckerView : FrameLayout, PropertyChangeListener {
      * @param view  Hinzufügende View
      */
     private fun addViewAmimated(view: View) {
-        animator.performAction(object : Animator.Action() {
+        animator.performAction(object : Action() {
             override fun run() {
                 // langsam einblenden: Alpha = 1
                 view.alpha = 0f
