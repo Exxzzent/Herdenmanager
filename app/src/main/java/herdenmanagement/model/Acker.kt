@@ -78,7 +78,6 @@ class Acker() : BeobachtbaresElement() {
     /**
      * Erzeugt an der Position eine Instanz von [Gras].
      *
-     *
      * Wird ein neues Gras auf dem Acker platziert, werden die Observer des Ackers informiert.
      *
      * @param position Position, an der Gras wachsen soll
@@ -122,7 +121,7 @@ class Acker() : BeobachtbaresElement() {
     }
 
     /**
-     * Stellt einen Kalb auf den Acker. Rinder können hier zukünftig
+     * Stellt ein Kalb auf den Acker. Rinder können hier zukünftig
      * mit [Rindvieh.gibMilch] Milch geben.
      *
      * Wird ein neues Kalb auf dem Acker platziert, werden die Observer des Ackers informiert.
@@ -193,7 +192,7 @@ class Acker() : BeobachtbaresElement() {
 
     /**
      * Da sich Kühe bewegen können, muss verhindert werden, dass sie den Acker verlassen.
-     * Vor einer jeden bewegung prüfen sie deshalb mit dieser Methode, ob die Zielposition
+     * Vor einer jeden Bewegung prüfen sie deshalb mit dieser Methode, ob die Zielposition
      * gültig ist.
      *
      * @param position Zu prüfende Position
