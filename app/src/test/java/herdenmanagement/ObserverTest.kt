@@ -1,16 +1,16 @@
 package herdenmanagement
 
 import herdenmanagement.model.*
-import herdenmanagement.model.Rindvieh.RichtungsTyp
+import herdenmanagement.model.Richtung
 import org.junit.Assert
 import org.junit.Test
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
-class ObserverUnitTest {
+class ObserverTest {
 
     private var evt: PropertyChangeEvent? = null
-    private var listener: PropertyChangeListener = PropertyChangeListener { evt -> this@ObserverUnitTest.evt = evt }
+    private var listener: PropertyChangeListener = PropertyChangeListener { evt -> this@ObserverTest.evt = evt }
 
     @Test
     fun observeAcker() {
@@ -44,11 +44,11 @@ class ObserverUnitTest {
         rindvieh.dreheDichRechtsRum()
         Assert.assertEquals(Keys.PROPERTY_RICHTUNG, evt!!.propertyName)
         Assert.assertTrue(evt!!.newValue is Rindvieh)
-        Assert.assertEquals(RichtungsTyp.SUED, (evt!!.newValue as Rindvieh).richtung)
+        Assert.assertEquals(Richtung.SUED, (evt!!.newValue as Rindvieh).richtung)
 
         rindvieh.dreheDichLinksRum()
         Assert.assertEquals(Keys.PROPERTY_RICHTUNG, evt!!.propertyName)
         Assert.assertTrue(evt!!.newValue is Rindvieh)
-        Assert.assertEquals(RichtungsTyp.OST, (evt!!.newValue as Rindvieh).richtung)
+        Assert.assertEquals(Richtung.OST, (evt!!.newValue as Rindvieh).richtung)
     }
 }

@@ -56,11 +56,16 @@ informieren:
 val status = vera.status
 ```
 
-Es kann über seine Blickrichtung (NORD, OST, SUED, WEST)
-informieren:
+Es kann über seine Blickrichtung (NORD, OST, SUED, WEST) informieren.
+Neue Rindviecher schauen auf dem Bildschirm immer nach rechts, das Property
+'richtung' hat also initial den Wert Richtung.OST.
+Diese Information kann auch geändert werden, um das Rind zu drehen.
+Das Beispiel dreht die Kuh um, wenn sie nach Osten schaut:
 
 ```kotlin
-val richtung = vera.richtung
+if (vera.richtung == Richtung.OST) {
+    vera.richtung = vera.richtung.umgekehrt
+}
 ```
 
 Es kann über seine Position auf dem Acker informieren. Diese
@@ -70,6 +75,14 @@ Position ist selbst ein Objekt, das eine X- und Y-Koordinate besitzt:
 val position = vera.position
 val xKoordinate = position.x
 ```
+
+Eine Position kann in Kombination mit einer Richtung verändert werden.
+Das Beispiel bewegt die Kuh auf das westliche Feld neben der Kuh:
+
+```kotlin
+rind.position = rind.position.naechste(Richtung.WEST)
+```
+
 
 ## Was kann der Acker?
 
