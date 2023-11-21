@@ -38,9 +38,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
          * Liefert eine Kopie, damit diese manipuliert kann ohne die
          * Position von this zu ändern
          */
-        get() {
-            return Position(field.x, field.y)
-        }
+        get() = Position(field.x, field.y)
         /**
          * Die PropertyChangeListener werden informiert.
          *
@@ -58,7 +56,8 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
      * erzeugen. Wenn der PropertyChangeListener dem Schlüssel PROPERTY_NACHRICHT lauscht,
      * wird er über siese Nachrichten informiert.
      */
-    private var nachricht: Any = ""
+    var nachricht: Any = ""
+        get() = field
 
     /**
      * Setzen der aktuellen Nachricht. Die PropertyChangeListener werden informiert.
@@ -87,21 +86,13 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
     }
 
     /**
-     * @return Letzte Nachricht
-     */
-    fun gibNachricht(): Any {
-        return nachricht
-    }
-
-    /**
-     * @return Name des Positionselements, in der regel der Name der Klasse
+     * Name des PositionsElements, in der Regel der Name der Klasse
      */
     open val name: String
-        get() {
-            return javaClass.simpleName
-        }
+        get() = javaClass.simpleName
 
-    fun copy(): PositionsElement {
-        return clone() as PositionsElement
-    }
+    /**
+     * Kopiert das Objekt.
+     */
+    fun copy(): PositionsElement = clone() as PositionsElement
 }

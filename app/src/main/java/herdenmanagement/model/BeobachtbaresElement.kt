@@ -37,15 +37,16 @@ open class BeobachtbaresElement {
     private val listeners: MutableList<PropertyChangeListener> = ArrayList()
 
     /**
-     * Informiert alle Elemente in #listeners
+     * Informiert alle Elemente in #listeners.
+     * Die Methode demonstriert die Anwendung der der forEach-Methode.
      *
      * @param property Konstante, wie [Keys.PROPERTY_NACHRICHT] oder [Keys.PROPERTY_POSITION]
      * @param oldValue Alter Wert
      * @param newValue Neuer Wert
      */
     protected fun informiereBeobachter(property: String?, oldValue: Any?, newValue: Any?) {
-        for (listener in listeners) {
-            listener.propertyChange(PropertyChangeEvent(this, property, oldValue, newValue))
+        listeners.forEach {
+            it.propertyChange(PropertyChangeEvent(this, property, oldValue, newValue))
         }
     }
 

@@ -8,6 +8,15 @@ package herdenmanagement.model
 object Keys {
 
     /**
+     * Schlüssel zur Kommunikation mit einem [PropertyChangeListener].
+     * Der Schlüssel wird als property der Methode [.informiereBeobachter]
+     * übergeben.
+     *
+     * Der Schlüssel dient für Nachrichten zum [Acker].
+     */
+    const val PROPERTY_SIZE = "herdenmanagement.model.Acker.size"
+
+    /**
      * Schlüssel zur Kommunikation mit einem [java.beans.PropertyChangeListener].
      * Der Schlüssel wird als property der Methode [BeobachtbaresElement.informiereBeobachter]
      * übergeben.

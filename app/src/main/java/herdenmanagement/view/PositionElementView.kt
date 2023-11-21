@@ -155,22 +155,18 @@ open class PositionElementView : AppCompatImageView, PropertyChangeListener {
 
         // Nachricht anzeigen
         if (Keys.PROPERTY_NACHRICHT == evt.propertyName) {
-            val nachricht = positionsElement.gibNachricht()
+            val nachricht = positionsElement.nachricht
 
             // Ist die Nachricht ein String, wird dieser direkt angezeigt
-            if (nachricht is String) {
-                toast(nachricht)
-            }
+            (positionsElement.nachricht as? String)?.let(::toast)
 
             // Ist die Nachricht eine Zahl, wird sie zunächst als ID im Ressourcen-Bundle interpretiert
             // Klappt das nicht, wird die Zahl gezeigt
-            if (nachricht is Number) {
+            (nachricht as? Number)?.toInt()?.let {
                 try {
-                    val id = nachricht.toInt()
-                    val text = context.resources.getString(id, positionsElement.name)
-                    toast(text)
+                    toast(context.resources.getString(it, positionsElement.name))
                 } catch (e: NotFoundException) {
-                    toast("" + nachricht)
+                    toast(nachricht.toString())
                 }
             }
         } else if (Keys.PROPERTY_POSITION == evt.propertyName) {
@@ -178,7 +174,7 @@ open class PositionElementView : AppCompatImageView, PropertyChangeListener {
             // val ackerView = parent as? AckerView ?: return
 
             // Bei Änderungen der Position, muss ein neues Layout berechnet werden
-            animator.performAction(object : Animator.Action() {
+            animator.performAction(object : Action() {
                 override fun run() {
                     // Kopie aktualisieren
                     this@PositionElementView.positionsElement = positionsElement
@@ -192,18 +188,15 @@ open class PositionElementView : AppCompatImageView, PropertyChangeListener {
                     )
 
                     // Animation starten
-                    if (parent is ViewGroup) {
-                        TransitionManager.beginDelayedTransition(parent as ViewGroup)
-                    }
+                    (parent as? ViewGroup)?.run(TransitionManager::beginDelayedTransition)
 
                     // Position setzen
                     layoutParams = lp
                 }
             })
         } else {
-
             // Bei Änderungen der Position, muss ein neues Layout berechnet werden
-            animator.performAction(object : Animator.Action() {
+            animator.performAction(object : Action() {
                 override fun run() {
                     // Kopie aktualisieren
                     this@PositionElementView.positionsElement = positionsElement
@@ -248,7 +241,7 @@ open class PositionElementView : AppCompatImageView, PropertyChangeListener {
      * @param text Anzuzeigender Text
      */
     private fun toast(text: String) {
-        animator.performAction(object : Animator.Action() {
+        animator.performAction(object : Action() {
             override fun run() {
                 Toast.makeText(context, text, Toast.LENGTH_LONG).show()
             }

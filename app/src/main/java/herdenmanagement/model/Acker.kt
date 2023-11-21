@@ -22,10 +22,12 @@ import java.util.ArrayList
  * @property spalten Anzahl der Spalten auf dem Acker
  * @property zeilen Anzahl der Zeilen auf dem Acker
  */
-class Acker(
-    var spalten: Int,
-    var zeilen: Int
-) : BeobachtbaresElement() {
+class Acker() : BeobachtbaresElement() {
+
+    constructor(spalten: Int, zeilen: Int) : this() {
+        this.spalten = spalten
+        this.zeilen = zeilen
+    }
 
     /**
      * Objekte der Klasse Rindvieh, die auf dem Acker unterwegs sind
@@ -43,16 +45,34 @@ class Acker(
     val kaelber: MutableList<Kalb> = ArrayList()
 
     /**
-     * Schaltet die Art der Animation um. Art der Animation der Änderungen auf dem Acker.
+     * Schaltet die Art der Animation um. Art der Animation der Änderungen auf dem Acker
+     * (SYNCHRONOUS, ASYNCHRONOUS oder ASYNCHRONOUS_NO_WAIT).
      */
     var animation: Threading = Threading.ASYNCHRONOUS_NO_WAIT
-        /**
-         * @param value SYNCHRONOUS, ASYNCHRONOUS oder ASYNCHRONOUS_NO_WAIT
-         */
-        set (value) {
+        set(value) {
             val oldThreading = field
             field = value
             informiereBeobachter(Keys.PROPERTY_THREADING, oldThreading, value)
+        }
+
+    /**
+     * Anzahl der Spalten des Ackers
+     */
+    var spalten: Int = 3
+        set(value) {
+            val oldValue = field
+            field = value
+            informiereBeobachter(Keys.PROPERTY_SIZE, oldValue, value)
+        }
+
+    /**
+     * Anzahl der Zeilen des Ackers
+     */
+    var zeilen: Int = 3
+        set(value) {
+            val oldValue = field
+            field = value
+            informiereBeobachter(Keys.PROPERTY_SIZE, oldValue, value)
         }
 
     /**
@@ -80,69 +100,96 @@ class Acker(
      *
      * Wird ein neues Rind auf dem Acker platziert, werden die Observer des Ackers informiert.
      *
+     * Der Code demonstriert die Verwendung der apply-Methode.
+     *
      * @param name des Rindes, welches zukünftig hier weidet
      * @return Auf dem Acker platziertes Rind
      */
-    fun lassRindWeiden(name: String): Rindvieh {
-        val rind = Rindvieh(name)
-        rind.acker = this
-        viecher.add(rind)
-        informiereBeobachter(Keys.PROPERTY_VIECHER, null, rind)
-        return rind
+    fun lassRindWeiden(name: String): Rindvieh =
+        Rindvieh(name).apply { lassRindWeiden(this) }
+
+    /**
+     * Hier wird ein existierendes Rindvieh auf die Weide gestellt.
+     *
+     * Der Code demonstriert die Verwendung der also-Methode.
+     *
+     * @param rind Rind, welches zukünftig hier weidet
+     */
+    fun lassRindWeiden(rind: Rindvieh) = rind.also {
+        it.acker = this
+        viecher.add(it)
+        informiereBeobachter(Keys.PROPERTY_VIECHER, null, it)
     }
 
     /**
      * Stellt einen Kalb auf den Acker. Rinder können hier zukünftig
      * mit [Rindvieh.gibMilch] Milch geben.
      *
-     *
      * Wird ein neues Kalb auf dem Acker platziert, werden die Observer des Ackers informiert.
+     *
+     * Der Code demonstriert die Verwendung der also-Methode.
      *
      * @param position Position des aufzustellenden Kalbes
      * @return Auf dem Acker platziertes Kalb
      */
     fun lassKalbWeiden(position: Position): Kalb {
-        val kalb = Kalb()
-        kalb.acker = this
-        kalb.position = position
-        kaelber.add(kalb)
-        informiereBeobachter(Keys.PROPERTY_KALB, null, kalb)
-        return kalb
+        return Kalb().also { kalb ->
+            kalb.acker = this
+            kalb.position = position
+            kaelber.add(kalb)
+            informiereBeobachter(Keys.PROPERTY_KALB, null, kalb)
+        }
     }
 
     /**
      * @param position Zu prüfende Position
      * @return true, wenn an der Position ein [Kalb] steht
      */
-    fun istDaEinKalb(position: Position): Boolean {
-        return kaelber.find { it.position == position } != null
-    }
+    fun istDaEinKalb(position: Position): Boolean = kaelber.any { it.position == position }
 
     /**
      * @param position Zu prüfende Position
      * @return true, wenn an der Position ein [Gras] wächst
      */
-    fun istDaGras(position: Position): Boolean {
-        return graeser.find { it.position == position } != null
+    fun istDaGras(position: Position): Boolean = graeser.any { it.position == position }
+
+    /**
+     * Entfernt das erste an der Position gefundene Gras.
+     *
+     * Der Code demonstriert die Verwendung der firstOrNull- und let-Methode.
+     *
+     * @param position Zu prüfende Position
+     */
+    fun entferneGras(position: Position) {
+        graeser.firstOrNull { it.position == position }?.let {
+            graeser.remove(it)
+            informiereBeobachter(Keys.PROPERTY_GRAESER, it, null)
+        }
     }
 
     /**
-     * Kühe können mit [Rindvieh.frissGras] Gras fressen oder
-     * mit [Rindvieh.raucheGras] Gras rauchen.
+     * Entfernt das Rindvieh, wenn es vorher auf dem Acker stand.
      *
-     * @param position Zu prüfende Position
-     * @return true, wenn an der Position [Gras] wächst
+     * Der Code demonstriert die Verwendung der find- und let-Methode.
+     *
+     * @param rind Zu entfernendes Rindvieh
+     * @return true, wenn ein Rind entfernt wurde
      */
-    fun entferneGras(position: Position): Boolean {
-        for (gras in graeser) {
-            if (gras.position == position) {
-                graeser.remove(gras)
-                informiereBeobachter(Keys.PROPERTY_GRAESER, gras, null)
-                return true
-            }
+    fun entferneRind(rind: Rindvieh) {
+        viecher.find { it == rind }?.let {
+            viecher.remove(it)
+            informiereBeobachter(Keys.PROPERTY_VIECHER, it, null)
         }
-        return false
     }
+
+    /**
+     * Entfernt alle Rinder vom Acker
+     *
+     * Der Code demonstriert die Verwendung der forEach-Methode und einer Methodenreferenz.
+     * Die forEach-Methode gibt Unit zurück, deshalb führt der Zuweisungsoperator nicht dazu,
+     * dass entferneRinder einen "echten" Rückgabewert hat.
+     */
+    fun entferneRinder() = ArrayList(viecher).forEach(::entferneRind)
 
     /**
      * Da sich Kühe bewegen können, muss verhindert werden, dass sie den Acker verlassen.
@@ -152,10 +199,6 @@ class Acker(
      * @param position Zu prüfende Position
      * @return true, wenn die Position auf dem Acker möglich ist
      */
-    fun istGueltig(position: Position): Boolean {
-        return position.x > -1 &&
-                position.x < spalten &&
-                position.y > -1 &&
-                position.y < zeilen
-    }
+    fun istGueltig(position: Position): Boolean =
+        position.x in 0 until spalten && position.y in 0 until zeilen
 }

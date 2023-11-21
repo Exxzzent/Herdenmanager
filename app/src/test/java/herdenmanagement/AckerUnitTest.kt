@@ -2,6 +2,7 @@ package herdenmanagement
 
 import herdenmanagement.model.Acker
 import herdenmanagement.model.Position
+import herdenmanagement.model.Rindvieh
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -23,9 +24,10 @@ class AckerUnitTest {
     @Test
     fun bewegeRind() {
         val acker = Acker(5, 5)
-        val rindvieh = acker.lassRindWeiden("Rindvieh")
+        val rindvieh = Rindvieh("Rindvieh")
         Assert.assertEquals("Rindvieh", rindvieh.name)
 
+        acker.lassRindWeiden(rindvieh)
         val position = rindvieh.position
         rindvieh.geheVor()
         rindvieh.geheVor()
@@ -33,21 +35,27 @@ class AckerUnitTest {
         // y bleibt gleich, x erhöht sich
         Assert.assertEquals((position.x + 2).toLong(), rindvieh.position.x.toLong())
         Assert.assertEquals(position.y.toLong(), rindvieh.position.y.toLong())
+
         rindvieh.position = Position(0, 0)
         var zurueck = rindvieh.gehtsDaWeiterZurueck
         Assert.assertFalse(zurueck)
+
         var vor = rindvieh.gehtsDaWeiterVor
         Assert.assertTrue(vor)
+
         rindvieh.geheVor()
         zurueck = rindvieh.gehtsDaWeiterZurueck
         Assert.assertTrue(zurueck)
+
         rindvieh.dreheDichRechtsRum()
         rindvieh.dreheDichRechtsRum()
         vor = rindvieh.gehtsDaWeiterVor
         Assert.assertTrue(vor)
+
         rindvieh.geheVor()
         vor = rindvieh.gehtsDaWeiterVor
         Assert.assertFalse(vor)
+
         rindvieh.geheZurueck()
         vor = rindvieh.gehtsDaWeiterVor
         Assert.assertTrue(vor)
@@ -59,6 +67,7 @@ class AckerUnitTest {
         acker.lassGrasWachsen(Position(2, 2))
         Assert.assertFalse(acker.istDaGras(Position(1, 2)))
         Assert.assertTrue(acker.istDaGras(Position(2, 2)))
+
         val entfernt = acker.entferneGras(Position(2, 2))
         Assert.assertFalse(acker.istDaGras(Position(2, 2)))
         Assert.assertTrue(entfernt)
