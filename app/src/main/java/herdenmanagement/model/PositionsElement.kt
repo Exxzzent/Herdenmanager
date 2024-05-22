@@ -22,7 +22,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
      * Darstellende Views besitzen die selbe ID, um die Suche danach zu beschleunigen und
      * zu vereinfachen.
      */
-    internal val id: Int = IDGenerator.generateId()
+    val id: Int = IDGenerator.generateId()
 
     /**
      * Der Acker besitzt mehrere Spalten und Zeilen. In den entstehenden Zellen wird ein
@@ -33,7 +33,7 @@ open class PositionsElement : BeobachtbaresElement(), Cloneable {
     /**
      * Position auf dem Acker x = Spalte, y = Zeile
      */
-    internal var position: Position = Position(0, 0)
+    var position: Position = Position(0, 0)
         /**
          * Liefert eine Kopie, damit diese manipuliert kann ohne die
          * Position von this zu ändern

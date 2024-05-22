@@ -12,7 +12,7 @@ Bevor ein Rindvieh Aktionen ausführt, sollte man es erzeugen und auf einen Acke
 val vera = acker.lassRindWeiden("Vera")
 ```
 
-Es kann sich bewegen: 
+Es kann sich bewegen:
 
 ```kotlin
 vera.geheVor()
@@ -26,8 +26,8 @@ Es kann Gras fressen oder rauchen:
 vera.frissGras()
 vera.raucheGras()
 ```
-        
-Es kann, bevor man es in eine Richtung schickt, Fragen zu dieser mit boolean-Werten beantworten: 
+
+Es kann, bevor man es in eine Richtung schickt, Fragen zu dieser mit boolean-Werten beantworten:
 
 ```kotlin
 var gehtsDaWeiter = vera.gehtsDaWeiterVor
@@ -56,11 +56,16 @@ informieren:
 val status = vera.status
 ```
 
-Es kann über seine Blickrichtung (NORD, OST, SUED, WEST)
-informieren:
+Es kann über seine Blickrichtung (NORD, OST, SUED, WEST) informieren.
+Neue Rindviecher schauen auf dem Bildschirm immer nach rechts, das Property
+'richtung' hat also initial den Wert Richtung.OST.
+Diese Information kann auch geändert werden, um das Rind zu drehen.
+Das Beispiel dreht die Kuh um, wenn sie nach Osten schaut:
 
 ```kotlin
-val richtung = vera.richtung
+if (vera.richtung == Richtung.OST) {
+    vera.richtung = vera.richtung.umgekehrt
+}
 ```
 
 Es kann über seine Position auf dem Acker informieren. Diese
@@ -70,6 +75,14 @@ Position ist selbst ein Objekt, das eine X- und Y-Koordinate besitzt:
 val position = vera.position
 val xKoordinate = position.x
 ```
+
+Eine Position kann in Kombination mit einer Richtung verändert werden.
+Das Beispiel bewegt die Kuh auf das westliche Feld neben der Kuh:
+
+```kotlin
+rind.position = rind.position.naechste(Richtung.WEST)
+```
+
 
 ## Was kann der Acker?
 
@@ -84,7 +97,7 @@ fun manageHerde(mainActivity: MainActivity) {
 Der Acker kann Rinder weiden lassen. Ist der Acker selbst bereits sichtbar
 auf dem Smartphone, werden diese Rinder auch sofort sichtbar. Das Rindvieh
 muss hierfür bereits existieren und wird der Methode
-übergeben: 
+übergeben:
 
 ```kotlin
 val eumel = acker.lassRindWeiden("Eumel")
@@ -108,7 +121,7 @@ Listen: getKaelber(), getGraeser(), getViecher()
 val kaelber = acker.kaelber
 ```
 
-Wächst an einer Position Gras, kann es entfernt werden: 
+Wächst an einer Position Gras, kann es entfernt werden:
 
 ```kotlin
 val position = Position(1, 2)
@@ -135,7 +148,7 @@ acker.istDaEinKalb(position)
 ## Was können Kälber und Gras?
 
 Das Kalb kann wie das Rindvieh und das Gras über seine Position informieren. Diese
-Position hat eine X- und eine Y-Koordinate: 
+Position hat eine X- und eine Y-Koordinate:
 
 ```kotlin
 val position = gras.position

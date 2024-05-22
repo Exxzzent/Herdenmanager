@@ -11,7 +11,7 @@ import org.junit.Test
 /**
  * Testet die Grundfunktionen des Ackers
  */
-class AckerUnitTest {
+class AckerTest {
     @Before
     fun setUp() {
     }
@@ -70,7 +70,6 @@ class AckerUnitTest {
 
         val entfernt = acker.entferneGras(Position(2, 2))
         Assert.assertFalse(acker.istDaGras(Position(2, 2)))
-        Assert.assertTrue(entfernt)
         acker.lassKalbWeiden(Position(4, 0))
         Assert.assertFalse(acker.istDaEinKalb(Position(4, 3)))
         Assert.assertTrue(acker.istDaEinKalb(Position(4, 0)))

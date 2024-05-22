@@ -14,7 +14,7 @@ object IDGenerator {
      *
      * @return generierte ID
      */
-    internal fun generateId(): Int {
+    fun generateId(): Int {
         while (true) {
             val result = nextGeneratedId.get()
             // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
