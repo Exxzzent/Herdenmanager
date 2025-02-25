@@ -15,13 +15,23 @@ import java.beans.PropertyChangeListener
 import kotlin.math.max
 
 /**
- * Basisklasse für die Darstellung von Bundesländern wie Macklemburg-Vorpommern.
+ * Repräsentiert die AckerView, die als visuelle Darstellung eines Ackers dient.
  *
- * Die AckerView ist Observer des Ackers. Werden auf letzterem Kälber, Gräser und Lebewesen
- * (insbesondere Kühe) eingefügt, informiert der Acker Objekte dieser Klasse AckerView über
- * die Änderungen. Es ist Aufgabe der AckerView für die neuen Elemente korrespondierend eine
- * [KalbView], [GrasView] oder [RindviehView] zu erzeugen und als Child-Element
- * (siehe [addViewAmimated]) anzuzeigen.
+ * Die AckerView ist Observer des [Acker]-Modells. Wenn im Acker neue Elemente wie Kälber, Gräser
+ * oder Rinder eingefügt bzw. entfernt werden, wird die AckerView über diese Änderungen informiert und
+ * passt ihre Darstellung entsprechend an. Hierzu werden beispielsweise passende Child-Views (z. B. [KalbView],
+ * [GrasView] oder [RindviehView]) erzeugt und animiert hinzugefügt oder entfernt.
+ *
+ * Didaktische Hinweise:
+ * - **Model-View-Controller (MVC):**
+ *   Diese Klasse illustriert die Trennung von Model (Acker, PositionsElemente) und View (AckerView).
+ *   Änderungen im Model werden über das Observer-Muster (PropertyChangeListener) an die View kommuniziert.
+ * - **Dynamische Layout-Anpassung:**
+ *   Die Methode [calculateLayoutParams] zeigt, wie aus den Daten des Models dynamisch Layout-Parameter
+ *   berechnet werden, um die Position und Größe der Kind-Views festzulegen.
+ * - **Animation und Transition:**
+ *   Mithilfe von [TransitionManager.beginDelayedTransition] werden sanfte Übergänge bei Änderungen im Layout
+ *   und bei der Sichtbarkeit der Elemente realisiert.
  *
  * @author Steffen Greiffenberg
  */
@@ -32,37 +42,35 @@ class AckerView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), PropertyChangeListener {
 
     /**
-     * Versieht die Statusänderung von Objekten mit einer Animation
+     * Animator zur Steuerung der Animationen und UI-Aktualisierungen.
      */
     private val animator: Animator = Animator()
 
     /**
-     * Dargestellter Acker
+     * Das im Model dargestellte Acker-Objekt.
+     *
+     * Beim Setzen eines neuen Ackers wird die View zunächst von der alten Instanz abgemeldet
+     * und anschließend an den neuen Acker gekoppelt. Die Initialobjekte des Ackers werden dann
+     * anhand ihrer Typen (Rindvieh, Kalb, Gras) in der View angezeigt.
      */
     var acker = Acker(3, 4)
-        /**
-         * Beim Setzen des Ackers werden die momentan auf diesem vorhandene PositionsElement Objekte
-         * angezeigt.
-         */
         set(value) {
-            // Wenn die View bereits mit einem verknüpft ist,
-            // wird diese Verknüpfiung jetzt aufgehoben
+            // Wechsle in den asynchronen No-Wait Modus, um initiale Aktionen ohne Verzögerung anzuzeigen
             animator.threading = Threading.ASYNCHRONOUS_NO_WAIT
 
             @Suppress("SENSELESS_COMPARISON")
             if (field != null) {
+                // View von alter Acker-Instanz abmelden und vorhandene Elemente initial anzeigen
                 field.entferneBeobachter(this)
-
-                // add initial objects from acker
                 field.viecher.forEach { aktualisiereVieh(it, null) }
                 field.kaelber.forEach { aktualisiereKalb(it, null) }
                 field.graeser.forEach { aktualisiereGraeser(it, null) }
             }
 
-            // Der neue Acker wird gespeichert
+            // Speichern des neuen Ackers
             field = value
 
-            // Die Verknüpfung mit dem neuen Acker herstellen
+            // View an den neuen Acker binden
             field.fuegeBeobachterHinzu(this)
             field.viecher.forEach { aktualisiereVieh(null, it) }
             field.kaelber.forEach { aktualisiereKalb(null, it) }
@@ -72,111 +80,88 @@ class AckerView @JvmOverloads constructor(
         }
 
     /**
-     * Paint to draw a text. Reused in [onDraw]
-     */
-    private val textPaint = TextPaint()
-
-    /**
-     * Paint to draw lines. Reused in [onDraw]
+     * Paint-Objekt zur Darstellung von Zell-Hintergrundfarben.
      */
     private val paint = Paint()
 
     /**
-     * Abstand der Zellen
+     * TextPaint zur Darstellung von Text in den Zellen.
+     */
+    private val textPaint = TextPaint()
+
+    /**
+     * Abstand zwischen den Zellen (in Pixeln).
      */
     private var cellSpacing = 0f
 
     /**
-     * Initialisieren der View mit ihren Attributen
+     * Cache für die Berechnung von Textbereichen, um during onDraw() keine neuen Objekte zu erzeugen.
+     */
+    private val textRect = Rect()
+
+    /**
+     * Wiederverwendbarer Cache für Positionen während des Zeichnens.
+     */
+    private val positionCache = Position(0, 0)
+
+    /**
+     * Initialisierung der AckerView.
+     *
+     * Hier werden die benutzerdefinierten Attribute (z. B. cellSpacing, Zellhintergrundfarbe) aus dem XML
+     * geladen und die AckerView als Observer beim Acker registriert.
      */
     init {
         setWillNotDraw(false)
-
         context.withStyledAttributes(attrs, R.styleable.AckerView) {
             cellSpacing = getDimension(R.styleable.AckerView_cellSpacing, 8f)
             paint.color = getColor(R.styleable.AckerView_cellBackgroundColor, Color.WHITE)
             textPaint.color = getColor(R.styleable.AckerView_android_textColor, Color.LTGRAY)
             textPaint.textSize = getDimension(R.styleable.AckerView_cellSpacing, 40f)
         }
-
-        // Dicke der Zellen
-        paint.strokeWidth = 6f
+        paint.strokeWidth = 6f // Definiert die Dicke der Zellränder
         acker.fuegeBeobachterHinzu(this)
     }
 
     /**
-     * Measure the view and its content to determine the measured width and the
-     * measured height. This method is invoked by [measure] and
-     * should be overriden by subclasses to provide accurate and efficient
-     * measurement of their contents.
+     * Misst die Größe der AckerView sowie ihrer Kind-Views.
      *
-     * @param widthMeasureSpec  horizontal space requirements as imposed by the parent.
-     * The requirements are encoded with
-     * [android.view.View.MeasureSpec].
-     * @param heightMeasureSpec vertical space requirements as imposed by the parent.
-     * The requirements are encoded with
-     * [android.view.View.MeasureSpec].
+     * Die Methode berechnet die Größe jeder Zelle basierend auf der Anzahl der Spalten und Zeilen im Acker
+     * und weist diesen Wert dann den Kind-Views zu.
+     *
+     * @param widthMeasureSpec Horizontaler Messmodus, wie von der Parent-View vorgegeben.
+     * @param heightMeasureSpec Vertikaler Messmodus, wie von der Parent-View vorgegeben.
      */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        // get the width from widthMeasureSpec
         val width = max(MeasureSpec.getSize(widthMeasureSpec), 0).toFloat()
-
-        // get the height from widthMeasureSpec
         val height = max(MeasureSpec.getSize(heightMeasureSpec), 0).toFloat()
 
-        // set LayoutParams for all childs
-        var i = 0
-        val count = childCount
-        while (i < count) {
+        // Passe die Layout-Parameter aller Kind-Views an
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            if (child !is PositionElementView) continue
 
-            // check the class, avoid ClassCastExceptions for
-            // custom child views
-            if (getChildAt(i) !is PositionElementView) {
-                i++
-                continue
-            }
-            val child = getChildAt(i) as PositionElementView
             val lp = child.calculateLayoutParams(width, height)
-
-            // set exact size for child
             child.layoutParams = lp
             child.measure(lp.width or MeasureSpec.EXACTLY, lp.height or MeasureSpec.EXACTLY)
-            i++
         }
-
-        // set own size
         setMeasuredDimension(width.toInt(), height.toInt())
     }
 
     /**
-     * Cache zur Berechnung des Textbereichs
-     */
-    private val textRect = Rect()
-
-    /**
-     * Während onDraw() sollten keine Objekte erzeugt werden. Deshalb wird
-     * dieser Cache genutzt.
-     */
-    private val positionCache = Position(0, 0)
-
-    /**
-     * Zeichnet den Acker
+     * Zeichnet den Acker-Hintergrund und die Zell-Gitter.
      *
-     * @param canvas Zeichenfläche
+     * Für jede Zelle wird ein farbiger Hintergrund gezeichnet. In leeren Zellen (ohne Gras oder Kalb)
+     * wird zudem die Zellkoordinate als Text zentriert dargestellt.
+     *
+     * @param canvas Die Zeichenfläche, auf der der Acker gezeichnet wird.
      */
     override fun onDraw(canvas: Canvas) {
-        // Anzahl der Spalten und deren Breite ermitteln
         val columnWidth = width / acker.spalten.toFloat()
-
-        // Anzahl der Zeilen und deren Höhe ermitteln
         val rowHeight = height / acker.zeilen.toFloat()
 
-        // Zeilenweise ....
+        // Zeichne alle Zellen in einer Matrix
         for (y in 0 until acker.zeilen) {
-
-            // .... alle Spalten zeichnen
             for (x in 0 until acker.spalten) {
-                // Hintergrund der Zellen füllen
                 canvas.drawRect(
                     x * columnWidth + cellSpacing / 2,
                     y * rowHeight + cellSpacing / 2,
@@ -186,17 +171,16 @@ class AckerView @JvmOverloads constructor(
                 )
                 positionCache.x = x
                 positionCache.y = y
-                if (acker.istDaGras(positionCache) || acker.istDaEinKalb(positionCache)) {
-                    continue
-                }
 
-                // textgröße berechnen und Text zentriert zeichnen
+                // Überspringe Zellen, in denen Gras oder ein Kalb vorhanden sind
+                if (acker.istDaGras(positionCache) || acker.istDaEinKalb(positionCache)) continue
+
                 val text = "$x:$y"
                 textPaint.getTextBounds(text, 0, text.length, textRect)
                 canvas.drawText(
                     text,
-                    (x + 0.5f) * columnWidth - textRect.width() / 2.0f,
-                    (y + 0.5f) * rowHeight + textRect.height() / 2.0f,
+                    (x + 0.5f) * columnWidth - textRect.width() / 2f,
+                    (y + 0.5f) * rowHeight + textRect.height() / 2f,
                     textPaint
                 )
             }
@@ -205,18 +189,16 @@ class AckerView @JvmOverloads constructor(
     }
 
     /**
-     * Called from layout when this view should
-     * assign a size and position to each of its children.
+     * Ordnet den Child-Views ihre Positionen und Größen zu.
      *
-     * Derived classes with children should override
-     * this method and call layout on each of
-     * their children.
+     * Diese Methode wird vom Parent-Layout aufgerufen und weist den Child-Views basierend auf
+     * ihren Layout-Params die Position innerhalb der AckerView zu.
      *
-     * @param changed This is a new size or position for this view
-     * @param left    Left position, relative to parent
-     * @param top     Top position, relative to parent
-     * @param right   Right position, relative to parent
-     * @param bottom  Bottom position, relative to parent
+     * @param changed Flag, das angibt, ob sich Größe oder Position der View geändert haben.
+     * @param left Linke Position relativ zum Parent.
+     * @param top Obere Position relativ zum Parent.
+     * @param right Rechte Position relativ zum Parent.
+     * @param bottom Untere Position relativ zum Parent.
      */
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         for (i in 0 until childCount) {
@@ -232,9 +214,13 @@ class AckerView @JvmOverloads constructor(
     }
 
     /**
-     * Legt die GUI Elemente an, wenn Kalb, Gräser etc. angelegt wurden
+     * Reagiert auf [PropertyChangeEvent]s des Ackers.
      *
-     * @param evt Interessant sind z. B. die Nachrichten mit den Property-Name Acker.PROPERTY_KALB
+     * Abhängig vom Property-Namen (z. B. [Keys.PROPERTY_KALB], [Keys.PROPERTY_VIECHER],
+     * [Keys.PROPERTY_GRAESER] oder [Keys.PROPERTY_SIZE]) wird die Darstellung aktualisiert, indem
+     * entsprechende Views hinzugefügt, entfernt oder angepasst werden.
+     *
+     * @param evt Das Event, das die Änderung im Model beschreibt.
      */
     override fun propertyChange(evt: PropertyChangeEvent) {
         when (evt.propertyName) {
@@ -258,20 +244,21 @@ class AckerView @JvmOverloads constructor(
     }
 
     /**
-     * Aktualisiert die Ansicht für die Gräser. Für neue Objekte
-     * (newValue != null && oldValue == null) wird eine View erzeugt.
-     * Bei zu entfernenden Objekte (newValue == null && oldValue != null)
-     * wird auch die View entfernt.
+     * Aktualisiert die Ansicht für Gräser.
      *
-     * @param oldValue Neues Objekt auf dem Acker
-     * @param newValue Bereits auf dem Acker vorhandenes Objekt
+     * Für neue Gräser (newValue != null und oldValue == null) wird eine neue [GrasView] erzeugt und
+     * animiert hinzugefügt. Für entfernte Gräser (newValue == null und oldValue != null) wird die
+     * zugehörige View entfernt.
+     *
+     * @param oldValue Das zuvor vorhandene [Gras]-Objekt (falls vorhanden).
+     * @param newValue Das neue [Gras]-Objekt (falls vorhanden).
      */
     private fun aktualisiereGraeser(oldValue: Gras?, newValue: Gras?) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this)
             val v = GrasView(context, animator, newValue)
             newValue.fuegeBeobachterHinzu(v)
-            addViewAmimated(v)
+            addViewAmated(v)
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this)
             val v = findViewById<View>(oldValue.id)
@@ -283,20 +270,21 @@ class AckerView @JvmOverloads constructor(
     }
 
     /**
-     * Aktualisiert die Ansicht für die Rinder. Für neue Objekte
-     * (newValue != null && oldValue == null) wird eine View erzeugt.
-     * Bei zu entfernenden Objekte (newValue == null && oldValue != null)
-     * wird auch die View entfernt.
+     * Aktualisiert die Ansicht für Rinder.
      *
-     * @param oldValue Neues Objekt auf dem Acker
-     * @param newValue Bereits auf dem Acker vorhandenes Objekt
+     * Für neue Rinder (newValue != null und oldValue == null) wird eine neue [RindviehView] erzeugt und
+     * animiert hinzugefügt. Für entfernte Rinder (newValue == null und oldValue != null) wird die
+     * zugehörige View entfernt.
+     *
+     * @param oldValue Das zuvor vorhandene [Rindvieh]-Objekt (falls vorhanden).
+     * @param newValue Das neue [Rindvieh]-Objekt (falls vorhanden).
      */
     private fun aktualisiereVieh(oldValue: Rindvieh?, newValue: Rindvieh?) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this)
             val v = RindviehView(context, animator, newValue)
             newValue.fuegeBeobachterHinzu(v)
-            addViewAmimated(v)
+            addViewAmated(v)
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this)
             val v = findViewById<View>(oldValue.id)
@@ -308,20 +296,21 @@ class AckerView @JvmOverloads constructor(
     }
 
     /**
-     * Aktualisiert die Ansicht für die Kälber. Für neue Objekte
-     * (newValue != null && oldValue == null) wird eine View erzeugt.
-     * Bei zu entfernenden Objekte (newValue == null && oldValue != null)
-     * wird auch die View entfernt.
+     * Aktualisiert die Ansicht für Kälber.
      *
-     * @param oldValue Neues Objekt auf dem Acker
-     * @param newValue Bereits auf dem Acker vorhandenes Objekt
+     * Für neue Kälber (newValue != null und oldValue == null) wird eine neue [KalbView] erzeugt und
+     * animiert hinzugefügt. Für entfernte Kälber (newValue == null und oldValue != null) wird die
+     * zugehörige View entfernt.
+     *
+     * @param oldValue Das zuvor vorhandene [Kalb]-Objekt (falls vorhanden).
+     * @param newValue Das neue [Kalb]-Objekt (falls vorhanden).
      */
     private fun aktualisiereKalb(oldValue: Kalb?, newValue: Kalb?) {
         if (newValue != null && oldValue == null) {
             newValue.fuegeBeobachterHinzu(this)
             val v = KalbView(context, animator, newValue)
             newValue.fuegeBeobachterHinzu(v)
-            addViewAmimated(v)
+            addViewAmated(v)
         } else if (newValue == null && oldValue != null) {
             oldValue.entferneBeobachter(this)
             val v = findViewById<View>(oldValue.id)
@@ -333,19 +322,19 @@ class AckerView @JvmOverloads constructor(
     }
 
     /**
-     * @param view zu entfernende View
+     * Entfernt eine Child-View mit einer sanften Animation.
+     *
+     * Die View wird zunächst ausgeblendet (Alpha auf 0 gesetzt), dann entfernt und das Layout
+     * neu berechnet.
+     *
+     * @param view Die zu entfernende View.
      */
     private fun removeViewAnimated(view: View) {
         animator.performAction(object : Action() {
             override fun run() {
-                // Ausblenden -> Alpha = 0
                 TransitionManager.beginDelayedTransition(this@AckerView)
                 view.alpha = 0f
-
-                // Ausgeblendete View entfernen
                 removeView(view)
-
-                // layout anpassen?
                 requestLayout()
                 invalidate()
             }
@@ -353,22 +342,19 @@ class AckerView @JvmOverloads constructor(
     }
 
     /**
-     * Fügt dem Acker eine neue Darstellung für Kalb, Gras, etc. hinzu
+     * Fügt eine neue Child-View mit einer sanften Animation hinzu.
      *
-     * @param view  Hinzufügende View
+     * Die View wird langsam eingeblendet (Alpha von 0 auf 1) und anschließend dem Layout hinzugefügt.
+     *
+     * @param view Die hinzuzufügende View.
      */
-    private fun addViewAmimated(view: View) {
+    private fun addViewAmated(view: View) {
         animator.performAction(object : Action() {
             override fun run() {
-                // langsam einblenden: Alpha = 1
                 view.alpha = 0f
                 TransitionManager.beginDelayedTransition(this@AckerView)
                 view.alpha = 1f
-
-                // View hinzufügen
                 addView(view)
-
-                // layout anpassen?
                 requestLayout()
                 invalidate()
             }
