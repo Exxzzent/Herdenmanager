@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BA Herdenmanagement</string>
+    <string name="app_name">DHSN Herdenmanagement</string>
     <string name="export">&lt;/&gt; Export</string>
 
     <!-- Nachrichten des Rindviehs -->

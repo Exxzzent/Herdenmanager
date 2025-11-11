@@ -5,7 +5,7 @@ import herdenmanagement.model.Gras
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.AttributeSet
-import de.ba.herdenmanagement.R
+import de.dhsn.herdenmanagement.R
 import herdenmanagement.model.PositionsElement
 
 /**

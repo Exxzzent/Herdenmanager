@@ -2,7 +2,7 @@ package herdenmanagement
 
 import herdenmanagement.model.Threading
 import android.content.res.Configuration
-import de.ba.herdenmanagement.R
+import de.dhsn.herdenmanagement.R
 import herdenmanagement.view.AckerView
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

@@ -1,6 +1,6 @@
 package herdenmanagement.model
 
-import de.ba.herdenmanagement.R
+import de.dhsn.herdenmanagement.R
 
 /**
  * Repräsentiert ein Rindvieh, das sich auf einem [Acker] bewegen kann.

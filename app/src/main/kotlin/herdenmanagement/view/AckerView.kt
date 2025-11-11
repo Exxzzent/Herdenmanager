@@ -1,7 +1,7 @@
 package herdenmanagement.view
 
 import android.content.Context
-import de.ba.herdenmanagement.R
+import de.dhsn.herdenmanagement.R
 import android.widget.FrameLayout
 import android.text.TextPaint
 import android.transition.TransitionManager

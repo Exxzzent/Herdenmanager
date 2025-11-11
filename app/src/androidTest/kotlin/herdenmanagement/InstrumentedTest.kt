@@ -3,11 +3,7 @@ package herdenmanagement
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import herdenmanagement.view.AckerView
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import android.view.View
-import de.ba.herdenmanagement.R
-import herdenmanagement.model.Rindvieh
-import android.view.ViewGroup.OnHierarchyChangeListener
-import herdenmanagement.view.PositionElementView
+import de.dhsn.herdenmanagement.R
 import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
