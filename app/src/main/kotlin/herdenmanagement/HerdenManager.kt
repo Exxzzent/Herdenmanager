@@ -1,5 +1,8 @@
 package herdenmanagement
 
+import herdenmanagement.model.Position
+import herdenmanagement.model.Rindvieh
+
 /**
  * Der HerdenManager organisiert und steuert die Rinderherde.
  *
@@ -63,11 +66,29 @@ class HerdenManager {
     fun manageHerde(mainActivity: MainActivity) {
         val acker = mainActivity.acker
         val vera = acker.lassRindWeiden("Vera")
+        val veri = acker.lassRindWeiden("Veri")
+        val verus = acker.lassRindWeiden("Verus")
+        val verabus = acker.lassRindWeiden("Verabus")
 
-        // Bewege die Kuh vorwärts und zeige eine Benachrichtigung
-        vera.geheVor()
-        mainActivity.toast("Vera läuft!")
-
-        // TODO: Implementieren Sie Ihre Aktionen!
+        val rinder = mutableMapOf(1 to vera, 2 to veri, 3 to verus, 4 to verabus)
+        var i = 0
+        for (rind in rinder.values)
+            i = 0
+            while (true) {
+                if (i == 1) {
+                    break
+                }
+                if (rind.gehtsDaWeiterVor) {
+                    rind.geheVor()
+                } else {
+                    rind.dreheDichRechtsRum()
+                }
+                if (rind.position == Position(0, 0)) {
+                    i = 1
+                }
+            }
     }
+
+
 }
+
