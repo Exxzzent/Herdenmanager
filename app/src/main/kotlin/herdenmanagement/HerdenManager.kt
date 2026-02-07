@@ -66,8 +66,8 @@ class HerdenManager {
 
         // Bewege die Kuh vorwärts und zeige eine Benachrichtigung
         vera.geheVor()
-        vera.geheVor()
         mainActivity.toast("Vera läuft!")
 
+        // TODO: Implementieren Sie Ihre Aktionen!
     }
 }
