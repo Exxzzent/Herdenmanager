@@ -1,5 +1,7 @@
 package herdenmanagement.model
 
+import de.dhsn.herdenmanagement.R
+
 /**
  * Repräsentiert ein tanzendes Rind, das von der Klasse [Rindvieh] erbt.
  *
@@ -27,8 +29,19 @@ class TanzRind(name: String) : Rindvieh(name) {
      *
      * Diese Methode ist als Platzhalter gedacht und soll von den Studenten mit eigener Logik befüllt werden.
      */
+    var neueRichtung: Richtung = Richtung.NORD
+        set(value) {
+            val oldRindvieh = clone()
+            field = value
+            val newRindvieh = clone()
+            informiereBeobachter(Keys.PROPERTY_RICHTUNG, oldRindvieh, newRindvieh)
+        }
     fun geheSeitwaertsNachLinks() {
-        // TODO: Implementiere die Logik für die seitliche Bewegung nach links.
+        if (gehtsDaWeiterVor) {
+            position = position.naechste(neueRichtung)
+        } else {
+            zeigeNachricht(R.string.rindvieh_vor_mir_kein_acker)
+        }
     }
 
     /**
