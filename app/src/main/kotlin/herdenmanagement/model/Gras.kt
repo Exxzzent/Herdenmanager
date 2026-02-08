@@ -18,4 +18,9 @@ package herdenmanagement.model
  *
  * @author Steffen Greiffenberg
  */
-class Gras : PositionsElement()
+class Gras : PositionsElement(), DekoElement {
+    override fun siehGutAus() {
+        position = Position(position.x + 1, position.y)
+        position = Position(position.x - 1, position.y)
+    }
+}

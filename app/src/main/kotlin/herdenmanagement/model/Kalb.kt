@@ -17,4 +17,8 @@ package herdenmanagement.model
  *
  * @author Steffen Greiffenberg
  */
-class Kalb : PositionsElement()
+class Kalb : PositionsElement(), DekoElement {
+    override fun siehGutAus() {
+        zeigeNachricht("Ich sehe immer gut aus!")
+    }
+}
