@@ -37,58 +37,24 @@ import herdenmanagement.model.Rindvieh
 @Suppress("MemberVisibilityCanBePrivate", "UNUSED_PARAMETER")
 class HerdenManager {
 
-    /**
-     * Initialisiert den Acker.
-     *
-     * Diese Methode dient dazu, den Acker mit anfänglichen Objekten (z. B. Gras oder Kälbern)
-     * auszustatten. Die Einrichtung erfolgt ohne Animation, um einen statischen Ausgangszustand
-     * zu gewährleisten.
-     *
-     * Hinweis: Die Methode kann im Rahmen von Übungsaufgaben auch gestrichen werden, wenn nur
-     * [manageHerde] verwendet werden soll.
-     *
-     * @param mainActivity Die Hauptaktivität der App, über die auch auf die AckerView zugegriffen werden kann.
-     */
-    fun richteAckerEin(mainActivity: MainActivity) {
-        // TODO: Implementieren Sie die Einrichtung des Ackers, z. B. Gras wachsen lassen und Kälber platzieren.
-    }
-
-    /**
-     * Steuert die Aktionen innerhalb der Herde.
-     *
-     * In dieser Methode werden vorprogrammierte Aktionen ausgeführt, die die Interaktion mit dem Acker
-     * demonstrieren. Beispielsweise wird ein Rind (hier "Vera") auf dem Acker platziert und anschließend
-     * bewegt. Die Aktionen werden animiert dargestellt, sodass die Reihenfolge der Bewegungen und Zustandsänderungen
-     * nachvollzogen werden kann.
-     *
-     * @param mainActivity Die Hauptaktivität der App, die Zugriff auf den aktuell angezeigten Acker bietet.
-     */
     fun manageHerde(mainActivity: MainActivity) {
         val acker = mainActivity.acker
         val vera = acker.lassRindWeiden("Vera")
-        val veri = acker.lassRindWeiden("Veri")
-        val verus = acker.lassRindWeiden("Verus")
-        val verabus = acker.lassRindWeiden("Verabus")
-
-        val rinder = mutableMapOf(1 to vera, 2 to veri, 3 to verus, 4 to verabus)
-        var i = 0
-        for (rind in rinder.values)
-            i = 0
-            while (true) {
-                if (i == 1) {
-                    break
-                }
-                if (rind.gehtsDaWeiterVor) {
-                    rind.geheVor()
-                } else {
-                    rind.dreheDichRechtsRum()
-                }
-                if (rind.position == Position(0, 0)) {
-                    i = 1
-                }
-            }
+        val start = vera.position
+        laufeImKreis(vera, start)
     }
 
+    private fun laufeImKreis(rind : Rindvieh, start : Position) {
+        rind.geheVor()
+        if (rind.position != start) {
+            if (rind.gehtsDaWeiterVor) {
+                laufeImKreis(rind, start)
+            } else {
+                rind.dreheDichRechtsRum()
+                laufeImKreis(rind, start)
+            }
+        }
+    }
 
 }
 
