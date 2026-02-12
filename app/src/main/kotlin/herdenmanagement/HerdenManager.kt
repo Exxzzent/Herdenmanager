@@ -39,26 +39,28 @@ class HerdenManager {
 
     fun manageHerde(mainActivity: MainActivity) {
         val acker = mainActivity.acker
-        val rinder = mutableMapOf<String, Rindvieh>()
-        val vera = acker.lassRindWeiden("Vera")
-        val ver = acker.lassRindWeiden("Ver")
-        val ve = acker.lassRindWeiden("Ve")
-        val v = acker.lassRindWeiden("V")
+        acker.lassRindWeiden("Vera")
+        acker.lassRindWeiden("Verus")
+        acker.lassRindWeiden("Verdun")
+        acker.lassRindWeiden("Veran")
+        acker.lassRindWeiden("Verdulin")
+        acker.lassRindWeiden("Verter")
+        acker.lassRindWeiden("Volter")
+        acker.lassRindWeiden("Vilter")
+        acker.lassRindWeiden("Vedulino")
+        acker.lassRindWeiden("Van")
 
-        val map = HashMap<String, Rindvieh>()
+        val rinder = ArrayList<Rindvieh>()
         for (rind in acker.viecher) {
-            map.put(rind.name, rind)
+            rinder.add(rind)
         }
+        var randomNumber = (0..9).random()
+        var randomNumber2 = randomNumber
 
-
-        for (rind in map.values) {
-            for (i in 1..4) {
-                while(rind.gehtsDaWeiterVor) {
-                    rind.geheVor()
-                }
-                rind.dreheDichRechtsRum()
-            }
-
+        mainActivity.toast(rinder[randomNumber].name)
+        randomNumber = (0..9).random()
+        if (randomNumber != randomNumber2) {
+            mainActivity.toast(rinder[randomNumber].name)
         }
 
     }
