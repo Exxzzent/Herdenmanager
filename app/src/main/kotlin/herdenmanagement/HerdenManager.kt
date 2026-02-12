@@ -39,22 +39,30 @@ class HerdenManager {
 
     fun manageHerde(mainActivity: MainActivity) {
         val acker = mainActivity.acker
+        val rinder = mutableMapOf<String, Rindvieh>()
         val vera = acker.lassRindWeiden("Vera")
-        val start = vera.position
-        laufeImKreis(vera, start)
+        val ver = acker.lassRindWeiden("Ver")
+        val ve = acker.lassRindWeiden("Ve")
+        val v = acker.lassRindWeiden("V")
+
+        val map = HashMap<String, Rindvieh>()
+        for (rind in acker.viecher) {
+            map.put(rind.name, rind)
+        }
+
+
+        for (rind in map.values) {
+            for (i in 1..4) {
+                while(rind.gehtsDaWeiterVor) {
+                    rind.geheVor()
+                }
+                rind.dreheDichRechtsRum()
+            }
+
+        }
+
     }
 
-    private fun laufeImKreis(rind : Rindvieh, start : Position) {
-        rind.geheVor()
-        if (rind.position != start) {
-            if (rind.gehtsDaWeiterVor) {
-                laufeImKreis(rind, start)
-            } else {
-                rind.dreheDichRechtsRum()
-                laufeImKreis(rind, start)
-            }
-        }
-    }
 
 }
 
